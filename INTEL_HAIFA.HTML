@@ -52,8 +52,8 @@
 
         .history-item { background: white; padding: 15px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-        /* הגדרה נקייה לאזור ההדפסה: רוחב מדויק של 800 כדי להתאים לזום של המסך */
-        #print-area { display: none; width: 800px; max-width: 800px; background: white; margin: 0 auto; padding: 20px; direction: rtl; box-sizing: border-box; }
+        /* הגדרה קריטית ל-PDF: עוטף LTR ברוחב 800 כדי להכריח את האייפון לצלם הכל */
+        #print-area { display: none; width: 800px; background: white; margin: 0; padding: 0; direction: ltr; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -607,9 +607,9 @@
             </div>`;
         }
 
-        // מבנה פשוט ונקי לחלוטין. רוחב 800 נשלט מבחוץ.
+        // --- התיקון לחיתוך: div פנימי עם כיווניות עברית (RTL) בתוך div חיצוני אנגלי (LTR) ---
         let html = `
-        <div style="direction: rtl; text-align: right; font-family: Arial, sans-serif; color: black;">
+        <div style="direction: rtl; text-align: right; font-family: Arial, sans-serif; color: black; padding: 20px; box-sizing: border-box; width: 100%;">
             <div style="text-align:center; margin-bottom: 20px; border-bottom: 2px solid #0071c5; padding-bottom: 15px;">
                 <h1 style="color: #0071c5; margin-bottom: 5px; font-size: 24px;">דוח סיכום ביקורת איכות - אינטל חיפה</h1>
                 <h2 style="margin-top: 0; color: #333; font-size: 20px;">${formTitle}</h2>
@@ -752,7 +752,6 @@
         const wasPreviewOpen = previewModal.style.display === 'block';
         const wasModalOpen = modal.style.display === 'block';
         
-        // 1. מעלימים את כל האפליקציה לחלוטין
         appContainer.style.display = 'none';
         previewModal.style.display = 'none';
         modal.style.display = 'none';
@@ -760,32 +759,21 @@
         startupMenu.style.display = 'none';
         historyMenu.style.display = 'none';
         
-        // 2. מציגים רק את אזור ההדפסה
         element.style.display = 'block';
         window.scrollTo(0, 0);
 
-        // 3. התיקון הקריטי: מאלצים את הדפדפן להתרחב ל-800 פיקסלים
-        // ככה האייפון מבצע "זום אאוט" טבעי והכל נכנס למסך בלי שום חיתוך.
-        const viewportMeta = document.querySelector('meta[name="viewport"]');
-        const originalViewport = viewportMeta.getAttribute('content');
-        viewportMeta.setAttribute('content', 'width=800');
-
+        // שימוש ב-windowWidth ו-width מפורשים באופציות של הספריה במקום לגעת ב-viewport
         const opt = {
             margin:       10,
             filename:     `דוח_ביקורת_${currentFormId}_${new Date().toLocaleDateString().replace(/\./g,'-')}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true }, 
+            html2canvas:  { scale: 2, useCORS: true, width: 800, windowWidth: 800, scrollX: 0, scrollY: 0 }, 
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
-        // 4. ממתינים שנייה אחת כדי שהאייפון יספיק לעשות את הזום ולצייר את המסך לפני הצילום
         setTimeout(() => {
             html2pdf().set(opt).from(element).output('blob').then(function (pdfBlob) {
                 
-                // 5. מחזירים את המסך לזום של הטלפון הרגיל
-                viewportMeta.setAttribute('content', originalViewport);
-                
-                // 6. מחזירים את האפליקציה למצב הקודם
                 element.style.display = 'none';
                 appContainer.style.display = 'block';
                 if (wasPreviewOpen) previewModal.style.display = 'block';
@@ -811,7 +799,7 @@
                     alert("המכשיר לא תומך בשיתוף ישיר. הקובץ הורד למכשירך - תוכל לשתף אותו ידנית.");
                 }
             });
-        }, 1000); 
+        }, 500); 
     }
 </script>
 </body>
