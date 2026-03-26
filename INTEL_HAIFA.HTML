@@ -5,580 +5,454 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="robots" content="noindex, nofollow">
     
-    <title>מערכת QC אינטל חיפה | Professional Management System</title>
+    <title>מערכת QC אינטל חיפה - הגרסה המלאה</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        /* --- הגדרות עיצוב גלובליות --- */
         :root { 
-            --intel-blue: #0071c5; 
-            --intel-dark: #003c71; 
-            --intel-light: #f0f7ff;
-            --success-color: #27ae60; 
-            --warning-color: #f39c12; 
-            --danger-color: #e74c3c; 
-            --na-color: #95a5a6; 
-            --bg-body: #f4f7f9; 
-            --text-dark: #2c3e50;
-            --card-radius: 20px;
-            --shadow-sm: 0 4px 6px rgba(0,0,0,0.05);
-            --shadow-lg: 0 15px 35px rgba(0,0,0,0.1);
+            --intel-blue: #0071c5; --intel-dark: #003c71; --intel-light: #f0f7ff;
+            --success: #27ae60; --warning: #f39c12; --danger: #e74c3c; 
+            --na: #95a5a6; --bg: #f4f7f9; --text: #2c3e50;
+            --radius-lg: 25px; --radius-md: 15px; --shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
 
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: var(--bg-body); 
-            margin: 0; padding: 0; 
-            color: var(--text-dark);
-            direction: rtl; 
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            background: var(--bg); margin: 0; padding: 0; color: var(--text);
+            direction: rtl; overflow-x: hidden; -webkit-font-smoothing: antialiased;
         }
 
-        /* --- אנימציות --- */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        /* אנימציות */
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .page { display: none; min-height: 100vh; animation: slideUp 0.4s ease-out; }
+        .active-page { display: block; }
 
-        .page-view { display: none; min-height: 100vh; animation: fadeIn 0.4s ease-out; }
-        .active-view { display: block; }
-
-        /* --- מסך כניסה (Premium Login) --- */
-        #view_login { 
+        /* מסך כניסה */
+        #login_page { 
             background: radial-gradient(circle at center, var(--intel-blue) 0%, var(--intel-dark) 100%);
             display: flex; align-items: center; justify-content: center; padding: 20px;
         }
-        .login-box {
-            background: white; padding: 50px; border-radius: 30px;
-            box-shadow: 0 30px 100px rgba(0,0,0,0.5); width: 100%; max-width: 450px; text-align: center;
+        .login-card {
+            background: white; padding: 50px; border-radius: var(--radius-lg);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.4); width: 100%; max-width: 450px; text-align: center;
         }
-        .login-box h1 { color: var(--intel-blue); font-size: 32px; margin: 0 0 15px; font-weight: 900; }
-        .login-box p { color: #666; margin-bottom: 30px; line-height: 1.5; }
-        .login-badge {
+        .security-tag {
             background: var(--intel-light); color: var(--intel-blue); padding: 10px 20px;
-            border-radius: 50px; font-size: 13px; font-weight: 700; margin-bottom: 35px;
+            border-radius: 50px; font-size: 13px; font-weight: 700; margin-bottom: 30px;
             display: inline-block; border: 1px solid #d0e7ff;
         }
-        .input-login {
-            width: 100%; padding: 20px; border-radius: 15px; border: 2.5px solid #edf2f7;
-            font-size: 22px; text-align: center; margin-bottom: 25px; outline: none; transition: 0.3s;
-            box-sizing: border-box; background: #fafafa;
-        }
-        .input-login:focus { border-color: var(--intel-blue); background: #fff; box-shadow: 0 0 15px rgba(0,113,197,0.1); }
 
-        /* --- כפתורי שליטה --- */
-        .btn-ui {
-            width: 100%; padding: 20px; border: none; border-radius: 15px;
-            font-size: 19px; font-weight: 800; cursor: pointer; transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            box-sizing: border-box; text-decoration: none;
-        }
-        .btn-ui-primary { background: var(--intel-blue); color: white; box-shadow: 0 10px 25px rgba(0,113,197,0.3); }
-        .btn-ui-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,113,197,0.4); }
-        .btn-ui-secondary { background: white; border: 3px solid var(--intel-blue); color: var(--intel-blue); }
-        .btn-ui-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; font-size: 14px; padding: 10px; }
-
-        /* --- תפריט ראשי וסטטיסטיקה --- */
-        #view_menu { padding: 40px 20px; text-align: center; }
+        /* תפריט ראשי */
+        #menu_page { padding: 40px 20px; text-align: center; }
         .stats-grid {
             display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;
-            max-width: 650px; margin: 35px auto;
+            max-width: 600px; margin: 30px auto;
         }
-        .stat-card {
-            background: white; padding: 20px; border-radius: 20px;
-            box-shadow: var(--shadow-sm); border-bottom: 5px solid var(--intel-blue);
-            transition: 0.3s;
-        }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
-        .stat-value { font-size: 26px; font-weight: 900; color: var(--intel-blue); display: block; }
-        .stat-label { font-size: 12px; color: #888; font-weight: bold; margin-top: 8px; }
+        .stat-card { background: white; padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow); }
+        .stat-num { font-size: 24px; font-weight: 900; color: var(--intel-blue); display: block; }
 
-        /* --- דאשבורד הביקורת (The Gauges) --- */
-        .audit-dashboard { 
-            position: sticky; top: 0; z-index: 2500; background: rgba(255,255,255,0.96); 
-            backdrop-filter: blur(15px); padding: 15px 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+        /* דאשבורד (שעונים) */
+        .dashboard { 
+            position: sticky; top: 0; z-index: 2000; background: rgba(255,255,255,0.95); 
+            backdrop-filter: blur(15px); padding: 15px 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); 
             display: flex; justify-content: space-around; align-items: center; border-bottom: 5px solid var(--intel-blue);
         }
-        .gauge-unit { text-align: center; flex: 1; position: relative; }
-        .gauge-circle-ui { 
+        .gauge-circle { 
             width: 85px; height: 85px; border-radius: 50%; border: 7px solid #f0f2f5;
             margin: auto; display: flex; align-items: center; justify-content: center;
-            font-size: 22px; font-weight: 900; transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background: white; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+            font-size: 22px; font-weight: 900; background: white;
         }
-        .gauge-subtext { font-size: 11px; font-weight: 800; color: #7f8c8d; margin-top: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .trend-marker-ui { position: absolute; top: -5px; right: 20%; font-size: 24px; animation: pulse 2s infinite; }
+        .trend-icon { font-size: 24px; position: absolute; top: -5px; right: 15%; }
 
-        /* --- טופס הביקורת --- */
-        .main-container { padding: 25px; max-width: 950px; margin: auto; padding-bottom: 120px; }
-        .form-card { 
-            background: white; padding: 35px; border-radius: 25px; 
-            margin-bottom: 30px; box-shadow: var(--shadow-sm); 
-        }
-        
-        .field-label { font-weight: 800; color: var(--intel-blue); display: block; margin-bottom: 12px; font-size: 17px; }
-        .input-text, .select-ui, .textarea-ui {
-            width: 100%; padding: 18px; border-radius: 15px; border: 2.5px solid #edf2f7;
-            font-size: 17px; background: #fff; outline: none; transition: 0.3s; box-sizing: border-box;
-            font-family: inherit;
-        }
-        .select-ui:focus { border-color: var(--intel-blue); }
-
-        .cat-banner {
+        /* טופס ביקורת */
+        .container { padding: 25px; max-width: 900px; margin: auto; padding-bottom: 120px; }
+        .card { background: white; padding: 30px; border-radius: var(--radius-lg); margin-bottom: 30px; box-shadow: var(--shadow); }
+        .category-header {
             background: linear-gradient(135deg, var(--intel-blue) 0%, #005696 100%); 
-            color: white; padding: 20px 30px; border-radius: 15px; 
-            font-weight: 800; font-size: 20px; margin: 50px 0 25px;
-            box-shadow: 0 10px 20px rgba(0,113,197,0.2); display: flex; justify-content: space-between; align-items: center;
+            color: white; padding: 18px 25px; border-radius: var(--radius-md); 
+            font-weight: 800; font-size: 19px; margin: 45px 0 25px;
         }
-
-        .audit-question-row {
-            background: white; padding: 30px; border-radius: 20px;
-            margin-bottom: 22px; border-right: 12px solid #edf2f7;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.03); transition: 0.4s;
+        .audit-row {
+            background: white; padding: 25px; border-radius: 20px;
+            margin-bottom: 20px; border-right: 12px solid #edf2f7;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.3s;
         }
-        .audit-question-row.is-active { border-right-color: var(--intel-blue); transform: translateX(-8px); box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
-        .question-title { font-size: 19px; font-weight: 700; margin-bottom: 22px; color: #34495e; line-height: 1.6; }
+        .audit-row.active { border-right-color: var(--intel-blue); }
 
-        .score-button-group { display: flex; gap: 15px; }
-        .score-option-btn {
+        /* כפתורי ציון */
+        .score-flex { display: flex; gap: 15px; margin-top: 15px; }
+        .btn-score {
             flex: 1; padding: 18px 5px; border: 2.5px solid #f1f3f5;
-            background: #f8fafc; border-radius: 15px; font-weight: 800;
-            font-size: 16px; cursor: pointer; transition: 0.2s;
+            background: #f8fafc; border-radius: var(--radius-md); font-weight: 800; font-size: 16px; cursor: pointer;
         }
-        .btn-score-pass.active { background: var(--success-color); color: white; border-color: var(--success-color); box-shadow: 0 8px 20px rgba(39,174,96,0.3); }
-        .btn-score-fail.active { background: var(--danger-color); color: white; border-color: var(--danger-color); box-shadow: 0 8px 20px rgba(231,76,60,0.3); }
-        .btn-score-na.active { background: var(--na-color); color: white; border-color: var(--na-color); }
+        .btn-pass.active { background: var(--success); color: white; border-color: var(--success); }
+        .btn-fail.active { background: var(--danger); color: white; border-color: var(--danger); }
+        .btn-na.active { background: var(--na); color: white; border-color: var(--na); }
 
-        .note-textarea {
-            width: 100%; margin-top: 18px; padding: 18px;
-            border: 2px dashed #cbd5e0; border-radius: 15px; font-size: 15px;
-            background: #fcfcfc; box-sizing: border-box; display: none; outline: none;
+        .note-area {
+            width: 100%; margin-top: 15px; padding: 15px; border: 2px dashed #cbd5e0;
+            border-radius: var(--radius-md); font-size: 15px; display: none; outline: none; box-sizing: border-box;
         }
 
-        /* --- היסטוריה והשוואה --- */
-        .history-card-item {
+        /* היסטוריה */
+        .history-item {
             background: white; padding: 25px; border-radius: 20px; margin-bottom: 20px;
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: var(--shadow-sm); border-right: 10px solid var(--intel-blue);
-            transition: 0.3s;
+            box-shadow: var(--shadow); border-right: 8px solid var(--intel-blue);
         }
-        .history-card-item:hover { transform: scale(1.01); }
-        .hist-content h4 { margin: 0; font-size: 21px; color: var(--intel-dark); }
-        .hist-content p { margin: 8px 0 0; font-size: 14px; color: #7f8c8d; font-weight: 600; }
-        .hist-score-val { font-size: 28px; font-weight: 900; color: var(--intel-blue); }
 
-        /* --- PDF Render Zone (Desktop Emulation) --- */
-        #pdf_export_viewport { 
-            position: absolute; left: -10000px; top: 0; width: 1200px; 
+        /* PDF וייצוא (Virtual Desktop Viewport) */
+        #pdf_export_zone { 
+            position: absolute; left: -15000px; top: 0; width: 1250px; 
             background: white; padding: 70px; direction: rtl;
         }
-        .pdf-header-main { text-align: center; border-bottom: 10px solid var(--intel-blue); padding-bottom: 40px; margin-bottom: 50px; }
-        .pdf-data-table { width: 100%; border-collapse: collapse; margin-top: 40px; }
-        .pdf-data-table th, .pdf-data-table td { border: 2px solid #eee; padding: 20px; text-align: right; font-size: 17px; }
-        .pdf-data-table th { background: #f8f9fa; color: var(--intel-blue); font-weight: 900; }
-        .pdf-section-title { background: #edf6fd; font-weight: 900; color: var(--intel-dark); font-size: 20px; }
+        .pdf-table { width: 100%; border-collapse: collapse; margin-top: 35px; }
+        .pdf-table th, .pdf-table td { border: 2px solid #eee; padding: 18px; text-align: right; }
+        .pdf-cat-row { background: #eef6fc; font-weight: 900; color: var(--intel-dark); font-size: 18px; }
 
-        /* מודל PDF */
-        #modal_pdf_export {
+        /* מודל */
+        #modal_pdf {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.92); z-index: 6000; padding: 25px; box-sizing: border-box;
-            backdrop-filter: blur(12px);
+            background: rgba(0,0,0,0.9); z-index: 5000; padding: 20px; backdrop-filter: blur(10px);
         }
-        .modal-card-ui {
-            background: white; padding: 50px; border-radius: 40px;
-            max-width: 550px; margin: 60px auto; text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+        .modal-body {
+            background: white; padding: 50px; border-radius: 35px; max-width: 550px; margin: 50px auto; text-align: center;
+        }
+        
+        /* כפתורים כלליים */
+        .btn-main {
+            width: 100%; padding: 20px; border: none; border-radius: var(--radius-md);
+            font-size: 19px; font-weight: 800; cursor: pointer; transition: 0.3s;
+            background: var(--intel-blue); color: white; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
     </style>
 </head>
 <body>
 
-<div id="view_login" class="page-view active-view">
-    <div class="login-box">
-        <div style="font-size: 50px; margin-bottom: 15px;">🌐</div>
+<div id="login_page" class="page active-page">
+    <div class="login-card">
         <h1>Intel Haifa QC</h1>
-        <p>מערכת ניהול בקרת איכות ואבטחת מזון<br>קמפוס ניר עציון</p>
-        <div class="login-badge">🔐 סביבת עבודה פרטית ומאובטחת</div>
-        <input type="password" id="login_secret_key" class="input-login" placeholder="קוד גישה (2024)">
-        <button class="btn-ui btn-ui-primary" onclick="attemptLogin()">כניסה למערכת</button>
+        <p>מערכת ניהול בקרת איכות - ניר עציון</p>
+        <div class="security-tag">🔐 סביבה פרטית ומאובטחת</div>
+        <input type="password" id="login_pass" style="width:100%; padding:20px; border-radius:15px; border:2px solid #eee; font-size:22px; text-align:center; margin-bottom:25px;" placeholder="קוד גישה (2024)">
+        <button class="btn-main" onclick="checkLogin()">כניסה למערכת</button>
     </div>
 </div>
 
-<div id="view_menu" class="page-view">
-    <div class="main-container" style="text-align:center; padding-top:40px;">
-        <h2 style="font-size:40px; color:var(--intel-blue); margin-bottom:10px;">שלום שמעון,</h2>
-        <p style="color:#7f8c8d; font-size:20px; font-weight:500;">המערכת מוכנה לביצוע ביקורת תקופתית</p>
-        
+<div id="menu_page" class="page">
+    <div class="container" style="text-align:center;">
+        <h2 style="font-size:36px; color:var(--intel-blue);">שלום שמעון,</h2>
         <div class="stats-grid">
-            <div class="stat-card"><span id="total_reports_ui" class="stat-value">0</span><span class="stat-label">דוחות שבוצעו</span></div>
-            <div class="stat-card"><span id="avg_score_ui" class="stat-value">0%</span><span class="stat-label">ממוצע ציונים</span></div>
-            <div class="stat-card"><span id="last_audit_ui" class="stat-value">--</span><span class="stat-label">ביקורת אחרונה</span></div>
+            <div class="stat-card"><span id="stat_count" class="stat-num">0</span><span>ביקורות</span></div>
+            <div class="stat-card"><span id="stat_avg" class="stat-num">0%</span><span>ממוצע</span></div>
+            <div class="stat-card"><span id="stat_last" class="stat-num">--</span><span>אחרונה</span></div>
         </div>
-
-        <div style="display:grid; gap:25px; max-width:600px; margin:50px auto;">
-            <button class="btn-ui btn-ui-primary" onclick="showPage('view_audit')">➕ ביקורת איכות חדשה</button>
-            <button class="btn-ui btn-ui-secondary" onclick="renderHistoryView()">📂 היסטוריית דוחות והשוואה</button>
-            <div style="margin-top:20px; border-top:1px solid #ddd; padding-top:25px;">
-                <button class="btn-ui" style="background:#f1f3f5; color:#4a5568;" onclick="location.reload()">🔒 יציאה מאובטחת</button>
-                <button class="btn-ui btn-ui-danger" style="margin-top:15px;" onclick="clearSystemData()">🗑️ איפוס כל הנתונים (זהירות!)</button>
-            </div>
+        <div style="display:grid; gap:20px; max-width:550px; margin:40px auto;">
+            <button class="btn-main" onclick="showPage('audit_page')">➕ ביקורת איכות חדשה</button>
+            <button class="btn-main" style="background:white; color:var(--intel-blue); border:3px solid var(--intel-blue);" onclick="openHistory()">📂 היסטוריית דוחות</button>
+            <button class="btn-main" style="background:#edf2f7; color:#4a5568;" onclick="location.reload()">🔒 התנתקות</button>
         </div>
     </div>
 </div>
 
-<div id="view_audit" class="page-view">
-    <div class="audit-dashboard">
-        <div class="gauge-unit">
-            <div class="gauge-subtext">ציון נוכחי</div>
-            <div id="gauge_live_val" class="gauge-circle-ui" style="color:var(--intel-blue);">0%</div>
+<div id="audit_page" class="page">
+    <div class="dashboard">
+        <div style="text-align:center;">
+            <div style="font-size:11px; font-weight:800; color:#7f8c8d;">ציון נוכחי</div>
+            <div id="gauge_live" class="gauge-circle" style="color:var(--intel-blue);">0%</div>
         </div>
-        <div class="gauge-unit" style="position:relative;">
-            <div id="trend_indicator_ui" class="trend-marker-ui"></div>
-            <div class="gauge-subtext">ביקורת קודמת</div>
-            <div id="gauge_prev_val" class="gauge-circle-ui" style="font-size:16px; color:#bdc3c7; border-style:dashed;">--</div>
+        <div style="text-align:center; position:relative;">
+            <div id="trend_icon" class="trend-icon"></div>
+            <div style="font-size:11px; font-weight:800; color:#7f8c8d;">ביקורת קודמת</div>
+            <div id="gauge_prev" class="gauge-circle" style="font-size:16px; color:#bdc3c7; border-style:dashed;">--</div>
         </div>
-        <button onclick="showPage('view_menu')" style="background:none; border:none; font-size:36px; cursor:pointer; color:var(--intel-blue);">🏠</button>
+        <button onclick="showPage('menu_page')" style="background:none; border:none; font-size:32px; cursor:pointer;">🏠</button>
     </div>
 
-    <div class="main-container">
-        <div class="form-card">
-            <span class="field-label">שם המבקר/ת:</span>
-            <input type="text" id="inspector_full_name_ui" placeholder="הכנס שם מלא">
-            
-            <span class="field-label" style="margin-top:30px;">בחר מתחם ביקורת (טופס):</span>
-            <select id="audit_form_selector_ui" onchange="initializeAuditForm()" class="select-ui" style="border: 3px solid var(--intel-blue); font-weight:900;">
-                <option value="">-- בחר טופס ביקורת --</option>
-                <optgroup label="🍴 מסעדת Nine Dine">
-                    <option value="nine_dine_cleaning">סיור ניקיון Nine Dine</option>
-                    <option value="nine_dine_food_safety">בטיחות מזון Nine Dine</option>
+    <div class="container">
+        <div class="card">
+            <label style="font-weight:800; color:var(--intel-blue);">שם המבקר/ת:</label>
+            <input type="text" id="inspector_name" style="margin-top:10px; width:100%;" placeholder="הכנס שם מלא">
+            <label style="font-weight:800; color:var(--intel-blue); display:block; margin-top:25px;">בחר מתחם בדיקה:</label>
+            <select id="form_select" onchange="initForm()" style="margin-top:10px; width:100%; border:3px solid var(--intel-blue); font-weight:900;">
+                <option value="">-- בחר טופס מהרשימה --</option>
+                <optgroup label="🍴 Nine Dine">
+                    <option value="nd_clean">סיור ניקיון - Nine Dine</option>
+                    <option value="nd_food">בטיחות מזון - Nine Dine</option>
                 </optgroup>
                 <optgroup label="🍱 Bento & Nona">
-                    <option value="bento_complex">ביקורת Bento - מקיף</option>
-                    <option value="nona_complex">ביקורת Nona - מקיף</option>
+                    <option value="bento">ביקורת Bento (מקיף)</option>
+                    <option value="nona">ביקורת Nona (מקיף)</option>
                 </optgroup>
-                <optgroup label="☕ בתי קפה (אילנ'ס)">
-                    <option value="cafe_ilans">סיור בתי קפה (Ilan's)</option>
+                <optgroup label="☕ בתי קפה">
+                    <option value="cafe">סיור בתי קפה (אילנ'ס)</option>
                 </optgroup>
-                <optgroup label="📦 לוגיסטיקה ומרלו&quot;ג">
-                    <option value="marlog_logistics">פגי תוקף וניקיון מרלו"ג</option>
+                <optgroup label="📦 לוגיסטיקה">
+                    <option value="marlog">פגי תוקף וניקיון - מרלו"ג</option>
                 </optgroup>
             </select>
         </div>
-
-        <div id="audit_questions_mount"></div>
-
-        <div id="audit_footer_zone" class="form-card" style="display:none; margin-top:50px;">
-            <span class="field-label">סיכום מנהלים והערות לשיפור:</span>
-            <textarea id="audit_final_notes_ui" rows="6" class="textarea-ui" placeholder="תאר כאן את ממצאי הביקורת העיקריים ודגשים לשיפור..."></textarea>
-            <button class="btn-ui btn-ui-primary" style="margin-top:35px;" onclick="saveCurrentAuditToHistory()">💾 סיים ושמור דוח PDF</button>
+        <div id="form_mount"></div>
+        <div id="footer_zone" class="card" style="display:none;">
+            <label style="font-weight:800; color:var(--intel-blue);">סיכום מנהלים:</label>
+            <textarea id="audit_summary" rows="6" style="margin-top:10px; width:100%;" placeholder="תאר כאן ממצאים ודגשים לשיפור..."></textarea>
+            <button class="btn-main" style="margin-top:30px;" onclick="saveAudit()">💾 סיים ושמור PDF</button>
         </div>
     </div>
 </div>
 
-<div id="view_history" class="page-view">
-    <div class="main-container">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:45px;">
-            <h2 style="font-size:36px; color:var(--intel-blue); margin:0;">היסטוריית דוחות</h2>
-            <button class="btn-ui btn-ui-secondary" style="width:auto; padding:12px 25px;" onclick="showPage('view_menu')">חזור 🔙</button>
+<div id="history_page" class="page">
+    <div class="container">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
+            <h2 style="font-size:32px; color:var(--intel-blue); margin:0;">היסטוריית ביקורות</h2>
+            <button class="btn-main" style="width:auto; padding:12px 25px;" onclick="showPage('menu_page')">חזור</button>
         </div>
-        <div id="history_list_mount"></div>
+        <div id="history_list"></div>
     </div>
 </div>
 
-<div id="modal_pdf_export">
-    <div class="modal-card-ui">
-        <div style="font-size:80px; margin-bottom:25px;">📑</div>
-        <h2 style="color:var(--intel-blue); font-size:32px; margin-bottom:15px;">הדוח עובד בהצלחה!</h2>
-        <p style="color:#7f8c8d; font-size:19px; margin-bottom:40px;">הנתונים תועדו בבסיס הנתונים המקומי. כעת ניתן להפיק את קובץ ה-PDF המקצועי.</p>
-        <button class="btn-ui btn-ui-primary" onclick="executeProfessionalPDFExport()">📤 שלח PDF עכשיו (WhatsApp)</button>
-        <button class="btn-ui" style="background:#f1f3f5; color:#444; margin-top:15px;" onclick="document.getElementById('modal_pdf_export').style.display='none'">חזור לעריכה</button>
+<div id="modal_pdf">
+    <div class="modal-body">
+        <div style="font-size:70px;">📄</div>
+        <h2 style="color:var(--intel-blue);">הדוח נשמר בהצלחה!</h2>
+        <p style="color:#7f8c8d;">כעת ניתן להפיק את קובץ ה-PDF המקצועי ולשתף אותו.</p>
+        <button class="btn-main" onclick="exportPDF()">📤 שלח PDF עכשיו (WhatsApp)</button>
+        <button class="btn-main" style="background:#f1f3f5; color:#444; margin-top:15px;" onclick="document.getElementById('modal_pdf').style.display='none'">חזור</button>
     </div>
 </div>
 
-<div id="pdf_export_viewport"></div>
+<div id="pdf_export_zone"></div>
 
 <script>
-    /* --- בסיס הנתונים הענק והמפורט (The Grand Database) --- */
-    const MASTER_QC_DATABASE = {
-        "nine_dine_cleaning": {
+    // --- מסד הנתונים המלא (כל השאלות מכל הגיליונות) ---
+    const MASTER_DB = {
+        "nd_clean": {
             name: "סיור ניקיון - Nine Dine",
-            structure: [
-                { category: "רחבת כניסה ולובי", questions: ["אזור הקופות נקי משאריות לכלוך ופירורים", "עמדת הצטיידות סכו\"ם ומפיות מלאה ונקייה", "עמדת שטיפת ידיים - סבון, נייר ופח תקינים", "רצפה נקייה בכל שטח הכניסה והלובי", "שילוט תפריטים נקי, ברור ומעודכן", "ניקיון זכוכיות כניסה ודלתות"] },
-                { category: "עמדות הגשה (Front)", questions: ["פלנצ'ות ומשטחי עבודה מבריקים ונקיים", "מנדפים נקיים ללא שאריות שומן נראה לעין", "דלפקי הגשה נקיים משאריות מזון בין סבבים", "פסי הגשה (חם/קר) נקיים משאריות נוזלים", "זכוכיות הגשה ללא סימני ידיים או נתזים", "מתקני רטבים ותוספות נקיים ומלאים"] },
-                { category: "חדר אוכל ומתחם פינוי", questions: ["שולחנות וכסאות נקיים ומוכנים לישיבה", "עמדות פינוי כלים (טרולי) מסודרות ונקיות", "מכונות שתייה וקפה נקיות ללא דביקות", "רצפת חדר האוכל נקייה משאריות מזון", "פחי אשפה בחדר האוכל ריקים ונקיים"] },
-                { category: "אזורי הכנה ומטבח אחורי", questions: ["רצפת המטבח נקייה, יבשה וללא שומנים", "כיורי שטיפה נקיים ללא כלים עומדים", "פחי אשפה סגורים בדוושה ונקיים חיצונית", "קירות, קרמיקה ומפסקים נקיים ללא נתזים", "מחסן יום ומקררי הכנה נקיים ומסודרים"] }
+            data: [
+                { cat: "רחבת כניסה", qs: ["קופות נקיות", "עמדת סכו\"ם נקייה ומלאה", "עמדת שטיפת ידיים - סבון ונייר", "רצפה נקייה בכל שטח הכניסה", "שילוט תפריטים נקי ומעודכן"] },
+                { cat: "עמדות הגשה", qs: ["פלנצ'ות ומשטחי עבודה מבריקים", "מנדפים נקיים ללא שומן", "דלפקי הגשה נקיים משאריות", "פסי הגשה (חם/קר) נקיים", "זכוכיות הגשה ללא סימנים"] },
+                { cat: "חדר אוכל", qs: ["שולחנות וכסאות נקיים", "עמדות פינוי כלים (טרולי) נקיות", "מכונות שתייה וקפה נקיות", "רצפת חדר האוכל נקייה"] },
+                { cat: "פגי תוקף ותיעוד", qs: ["בדיקת תאריכים על רטבים בעמדות", "תיעוד ניקיונות יומי חתום", "בדיקת תוקף מוצרי TA (To-Go)"] }
             ]
         },
-        "nine_dine_food_safety": {
+        "nd_food": {
             name: "בטיחות מזון - Nine Dine",
-            structure: [
-                { category: "מערכות קירור והקפאה", questions: ["הפרדה מלאה בין מוצרים גולמיים למוכנים", "כל המזון מכוסה, עטוף ומוגבה מהמדף", "סימון מדבקות (תאריך פתיחה/תוקף) על הכל", "אחסון ביצים במקרר ייעודי או מדף תחתון", "בדיקת טמפרטורה (מתחת ל-4 מעלות במקררים)", "ניקיון פנים המקררים והמדפים"] },
-                { category: "תהליכי עבודה והיגיינה", questions: ["שימוש בקרשי חיתוך לפי קוד צבעים (בשרי/פרווה/ירק)", "מניעת זיהום צולב בזמן העבודה במטבח", "לבוש מגן מלא: כפפות, כיסוי ראש, סינר נקי", "תיעוד בישול תרמי וחיטוי ירקות כנדרש", "שימוש בחומרי ניקוי וחיטוי מאושרים בלבד", "שטיפת ידיים בין פעולות שונות"] }
+            data: [
+                { cat: "קירור והקפאה", qs: ["הפרדה מלאה בין גולמי למבושל", "כל המזון מכוסה ועטוף", "מדבקות תאריך פתיחה/תוקף על הכל", "אחסון ביצים במקרר ייעודי", "טמפרטורה תקינה במקררים"] },
+                { cat: "תהליכי ייצור", qs: ["שימוש בקרשי חיתוך לפי קוד צבעים", "מניעת זיהום צולב בעבודה", "לבוש מגן: כפפות, כיסוי ראש, סינר", "תיעוד בישול תרמי וחיטוי ירקות"] },
+                { cat: "פגי תוקף", qs: ["בדיקת תוקף חומרי גלם במקררי עבודה", "בדיקת תוקף רטבים וצמצומים", "בדיקת תוקף סלטים בהכנה עצמית"] }
             ]
         },
-        "bento_complex": {
-            name: "ביקורת Bento - מקיף",
-            structure: [
-                { category: "מתחם Bento", questions: ["דלפקי בנטו נקיים ללא שאריות אורז/רטבים", "עמדת החומוס נקייה ומסודרת", "מקררי To-Go מסודרים לפי תאריכי תוקף", "סביבת עבודה אחורית נקייה ומסודרת", "שימוש בכפפות וציוד ייעודי לבנטו בלבד", "ניקיון מכשור ייעודי (מכונת אורז וכו')"] }
+        "bento": {
+            name: "ביקורת Bento",
+            data: [
+                { cat: "ניקיון וסדר", qs: ["דלפקים נקיים", "עמדת החומוס נקייה", "מקררי TA מסודרים", "סביבת עבודה אחורית נקייה"] },
+                { cat: "בטיחות ופגי תוקף", qs: ["בדיקת תוקף רטבים (טריאקי, סויה וכו')", "בדיקת תוקף אורז וסושי בתיעוד", "סימון תוקף על סלטים", "הפרדה במקררים"] }
             ]
         },
-        "nona_complex": {
-            name: "ביקורת Nona - מקיף",
-            structure: [
-                { category: "מתחם Nona", questions: ["דלפקי הגשה נקיים ללא שאריות", "מכשור (טוסטרים, גריל) נקי משומן ופירורים", "רצפה ופחי אשפה במתחם נקיים", "סידור אסתטי של רטבים ותוספות", "עטיפת מזון בשעות שפל"] }
+        "nona": {
+            name: "ביקורת Nona",
+            data: [
+                { cat: "ניקיון וסדר", qs: ["דלפקי הגשה נקיים", "מכשור (גריל, טוסטר) נקי", "רצפה ופחי אשפה נקיים", "סידור רטבים ותוספות"] },
+                { cat: "בטיחות ופגי תוקף", qs: ["בדיקת תוקף גבינות ומוצרי חלב", "בדיקת תוקף ירקות חתוכים", "סימון תאריכי פתיחה על רטבים", "טמפרטורת מקררי פס"] }
             ]
         },
-        "cafe_ilans": {
-            name: "סיור בתי קפה (אילנ'ס)",
-            structure: [
-                { category: "דלפק ושירות", questions: ["מכונות קפה וטוחנים נקיים משאריות חלב", "מקרר כריכים מסודר ונקי (בדיקת תוקף)", "תצוגת מאפים נקייה ללא פירורים", "שולחנות הישיבה של בית הקפה נקיים", "עמדת סוכר/בחישה נקייה ומלאה"] }
+        "cafe": {
+            name: "סיור בתי קפה",
+            data: [
+                { cat: "ניקיון ושירות", qs: ["מכונות קפה וטוחנים נקיים", "מקרר כריכים מסודר ונקי", "תצוגת מאפים נקייה", "שולחנות ורצפה נקיים"] },
+                { cat: "פגי תוקף", qs: ["בדיקת תוקף כריכים וסלטים ב-TA", "בדיקת תוקף חלב ומוצריו", "בדיקת תוקף מאפים ותאריכי אפייה", "סימון תוקף על סירופים לקפה"] }
             ]
         },
-        "marlog_logistics": {
+        "marlog": {
             name: "פגי תוקף ומרלו\"ג",
-            structure: [
-                { category: "מקררים ומקפיאים", questions: ["מקרר 15 (ירקות מחוטאים) - בדיקת תוקף", "מקרר 16 (ירקות גולמי) - בדיקת תוקף", "סידור FIFO (First In First Out) בכל המקררים", "ניקיון רצפה ומדפים בתוך המקררים", "תקינות גומיות איטום בכל דלתות הקירור", "תיעוד טמפרטורות יומי"] },
-                { category: "מחסן יבש", questions: ["סדר כללי על המדפים במחסן", "הגבהה של כל הסחורה מהרצפה (שימוש במשטחים)", "בדיקת פגי תוקף במוצרים יבשים ושימורים", "ניקיון כללי ופינוי קרטונים ריקים מהמחסן", "הדברה - מלכודות תקינות ומסומנות"] }
+            data: [
+                { cat: "מקררים", qs: ["מקרר 15 (ירקות מחוטאים) - פגי תוקף", "מקרר 16 (ירקות גולמי) - פגי תוקף", "סידור FIFO בכל המקררים", "ניקיון רצפה ומדפים במקררים", "תקינות גומיות איטום בדלתות"] },
+                { cat: "מחסן יבש", qs: ["סדר כללי על המדפים", "הגבהה מהרצפה (משטחים)", "בדיקת פגי תוקף במוצרים יבשים", "פינוי קרטונים ריקים וניקיון"] },
+                { cat: "כללי", qs: ["תיעוד קבלת סחורה", "תיעוד טמפרטורות יומי", "הדברה - מלכודות תקינות"] }
             ]
         }
     };
 
-    let sessionAuditData = { scores: {}, type: "", inspector: "", score: 0, date: null, prevScore: null };
+    let session = { scores: {}, type: "", inspector: "", score: 0, date: null, prevScore: null };
 
-    /* --- מערכת ניווט וניהול דפים --- */
-    function showPage(pageId) {
-        document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active-view'));
-        document.getElementById(pageId).classList.add('active-view');
+    // --- לוגיקה ---
+
+    function checkLogin() {
+        if(document.getElementById('login_pass').value === "2024") showPage('menu_page');
+        else alert("קוד שגוי");
+    }
+
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+        document.getElementById(id).classList.add('active-page');
         window.scrollTo(0,0);
-        if(pageId === 'view_menu') refreshSystemStats();
+        if(id === 'menu_page') refreshStats();
     }
 
-    function attemptLogin() {
-        if(document.getElementById('login_secret_key').value === "2024") showPage('view_menu');
-        else alert("קוד גישה שגוי! נא נסה שוב.");
-    }
-
-    /* --- לוגיקת האפליקציה: השוואה, היסטוריה וציונים --- */
-    function initializeAuditForm() {
-        const type = document.getElementById('audit_form_selector_ui').value;
-        const mount = document.getElementById('audit_questions_mount');
+    function initForm() {
+        const type = document.getElementById('form_select').value;
+        const mount = document.getElementById('form_mount');
         if(!type) { mount.innerHTML = ""; return; }
         
-        const config = MASTER_QC_DATABASE[type];
-        sessionAuditData = { scores: {}, type: type, inspector: "", score: 0, date: Date.now() };
+        const config = MASTER_DB[type];
+        session = { scores: {}, type: type, inspector: "", score: 0, date: Date.now() };
         
-        // מנוע השוואה מתקדם: מציאת הציון האחרון של המתחם הספציפי שנבחר
-        const fullHistory = JSON.parse(localStorage.getItem('qc_intel_pro_history') || '[]');
-        const lastAuditOfThisType = fullHistory.find(h => h.type === type);
+        const history = JSON.parse(localStorage.getItem('qc_intel_v12_history') || '[]');
+        const last = history.find(h => h.type === type);
+        const prevGauge = document.getElementById('gauge_prev');
+        const trend = document.getElementById('trend_icon');
         
-        const prevScoreGauge = document.getElementById('gauge_prev_val');
-        const trendIconUi = document.getElementById('trend_indicator_ui');
-        
-        if(lastAuditOfThisType) {
-            prevScoreGauge.innerText = lastAuditOfThisType.score + "%";
-            sessionAuditData.prevScore = lastAuditOfThisType.score;
+        if(last) {
+            prevGauge.innerText = last.score + "%";
+            session.prevScore = last.score;
         } else {
-            prevScoreGauge.innerText = "--";
-            sessionAuditData.prevScore = null;
+            prevGauge.innerText = "--";
+            session.prevScore = null;
         }
-        trendIconUi.innerHTML = "";
+        trend.innerHTML = "";
 
-        let htmlContent = "";
-        config.structure.forEach((section, sIdx) => {
-            htmlContent += `<div class="cat-banner"><span>${section.category}</span><span>📝</span></div>`;
-            section.questions.forEach((q, qIdx) => {
+        let html = "";
+        config.data.forEach((section, sIdx) => {
+            html += `<div class="category-header"><span>${section.cat}</span></div>`;
+            section.qs.forEach((q, qIdx) => {
                 const qId = `q_${sIdx}_${qIdx}`;
-                htmlContent += `
-                <div class="audit-question-row" id="row_${qId}">
-                    <div class="question-title">${q}</div>
-                    <div class="score-button-group">
-                        <button class="score-option-btn btn-score-pass" onclick="registerScore('${qId}', 1, this)">תקין</button>
-                        <button class="score-option-btn btn-score-fail" onclick="registerScore('${qId}', 0, this)">ליקוי</button>
-                        <button class="score-option-btn btn-score-na" onclick="registerScore('${qId}', -1, this)">N/A</button>
+                html += `
+                <div class="audit-row" id="row_${qId}">
+                    <div style="font-size:18px; font-weight:700;">${q}</div>
+                    <div class="score-flex">
+                        <button class="btn-score btn-pass" onclick="setScore('${qId}', 1, this)">תקין</button>
+                        <button class="btn-score btn-fail" onclick="setScore('${qId}', 0, this)">ליקוי</button>
+                        <button class="btn-score btn-na" onclick="setScore('${qId}', -1, this)">N/A</button>
                     </div>
-                    <textarea id="note_${qId}" class="note-textarea" placeholder="פרט כאן את מהות הליקוי ופעולות לתיקון..."></textarea>
+                    <textarea id="note_${qId}" class="note-area" placeholder="פרט את הליקוי..."></textarea>
                 </div>`;
             });
         });
 
-        mount.innerHTML = htmlContent;
-        document.getElementById('audit_footer_zone').style.display = 'block';
-        updateSessionUI();
+        mount.innerHTML = html;
+        document.getElementById('footer_zone').style.display = 'block';
+        updateUI();
     }
 
-    function registerScore(id, val, btn) {
-        sessionAuditData.scores[id] = val;
-        btn.parentElement.querySelectorAll('.score-option-btn').forEach(b => b.classList.remove('active'));
+    function setScore(id, val, btn) {
+        session.scores[id] = val;
+        btn.parentElement.querySelectorAll('.btn-score').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById(`row_${id}`).classList.add('is-active');
-        
-        const noteArea = document.getElementById(`note_${id}`);
-        noteArea.style.display = (val === 0) ? "block" : "none";
-        
-        updateSessionUI();
+        document.getElementById(`row_${id}`).classList.add('active');
+        document.getElementById(`note_${id}`).style.display = (val === 0) ? "block" : "none";
+        updateUI();
     }
 
-    function updateSessionUI() {
-        let sum = 0, validCount = 0;
-        for(let key in sessionAuditData.scores) {
-            if(sessionAuditData.scores[key] !== -1) { sum += sessionAuditData.scores[key]; validCount++; }
+    function updateUI() {
+        let sum = 0, count = 0;
+        for(let k in session.scores) {
+            if(session.scores[k] !== -1) { sum += session.scores[k]; count++; }
         }
-        const calculatedScore = validCount > 0 ? Math.round((sum / validCount) * 100) : 0;
-        sessionAuditData.score = calculatedScore;
+        const score = count > 0 ? Math.round((sum / count) * 100) : 0;
+        session.score = score;
+        const gauge = document.getElementById('gauge_live');
+        const trend = document.getElementById('trend_icon');
+        gauge.innerText = score + "%";
         
-        const liveGauge = document.getElementById('gauge_live_val');
-        const trendUi = document.getElementById('trend_indicator_ui');
-        liveGauge.innerText = calculatedScore + "%";
-        
-        // צבעוניות לפי ציון
-        if(calculatedScore >= 85) liveGauge.style.borderColor = "var(--success-color)";
-        else if(calculatedScore >= 70) liveGauge.style.borderColor = "var(--warning-color)";
-        else liveGauge.style.borderColor = "var(--danger-color)";
+        if(score >= 85) gauge.style.borderColor = "var(--success)";
+        else if(score >= 70) gauge.style.borderColor = "var(--warning)";
+        else gauge.style.borderColor = "var(--danger)";
 
-        // חישוב והצגת מגמה (Arrow Trend)
-        if(sessionAuditData.prevScore !== null) {
-            if(calculatedScore > sessionAuditData.prevScore) { trendUi.innerHTML = "🔼"; trendUi.style.color = "var(--success-color)"; }
-            else if(calculatedScore < sessionAuditData.prevScore) { trendUi.innerHTML = "🔽"; trendUi.style.color = "var(--danger-color)"; }
-            else { trendUi.innerHTML = "⏺"; trendUi.style.color = "#999"; }
+        if(session.prevScore !== null) {
+            if(score > session.prevScore) { trend.innerHTML = "🔼"; trend.style.color = "var(--success)"; }
+            else if(score < session.prevScore) { trend.innerHTML = "🔽"; trend.style.color = "var(--danger)"; }
+            else trend.innerHTML = "⏺";
         }
     }
 
-    /* --- ניהול היסטוריה וסטטיסטיקות --- */
-    function refreshSystemStats() {
-        const historyData = JSON.parse(localStorage.getItem('qc_intel_pro_history') || '[]');
-        document.getElementById('total_reports_ui').innerText = historyData.length;
-        if(historyData.length > 0) {
-            const average = Math.round(historyData.reduce((acc, curr) => acc + curr.score, 0) / historyData.length);
-            document.getElementById('avg_score_ui').innerText = average + "%";
-            document.getElementById('last_audit_ui').innerText = new Date(historyData[0].date).toLocaleDateString('he-IL');
+    function refreshStats() {
+        const history = JSON.parse(localStorage.getItem('qc_intel_v12_history') || '[]');
+        document.getElementById('stat_count').innerText = history.length;
+        if(history.length > 0) {
+            const avg = Math.round(history.reduce((a,b) => a + b.score, 0) / history.length);
+            document.getElementById('stat_avg').innerText = avg + "%";
+            document.getElementById('stat_last').innerText = new Date(history[0].date).toLocaleDateString('he-IL');
         }
     }
 
-    function renderHistoryView() {
-        const historyData = JSON.parse(localStorage.getItem('qc_intel_pro_history') || '[]');
-        const mountPoint = document.getElementById('history_list_mount');
-        if(historyData.length === 0) { 
-            mountPoint.innerHTML = "<div class='form-card'><p style='text-align:center;'>טרם בוצעו ביקורות במערכת.</p></div>"; 
-        } else {
-            mountPoint.innerHTML = historyData.map(h => `
-                <div class="history-card-item">
-                    <div class="hist-content">
-                        <h4>${MASTER_QC_DATABASE[h.type].name}</h4>
-                        <p>תאריך: ${new Date(h.date).toLocaleDateString('he-IL')} | מבקר: ${h.inspector}</p>
+    function openHistory() {
+        const history = JSON.parse(localStorage.getItem('qc_intel_v12_history') || '[]');
+        const list = document.getElementById('history_list');
+        if(history.length === 0) list.innerHTML = "<p>אין דוחות.</p>";
+        else {
+            list.innerHTML = history.map(h => `
+                <div class="history-item">
+                    <div>
+                        <h4>${MASTER_DB[h.type].name}</h4>
+                        <p>${new Date(h.date).toLocaleDateString('he-IL')} | ${h.inspector}</p>
                     </div>
-                    <div class="hist-score-val" style="color:${h.score >= 85 ? 'var(--success-color)' : (h.score >= 70 ? 'var(--warning-color)' : 'var(--danger-color)')}">${h.score}%</div>
+                    <div style="font-size:24px; font-weight:900; color:var(--intel-blue);">${h.score}%</div>
                 </div>
             `).join('');
         }
-        showPage('view_history');
+        showPage('history_page');
     }
 
-    function saveCurrentAuditToHistory() {
-        sessionAuditData.inspector = document.getElementById('inspector_full_name_ui').value || "לא צוין";
-        if(sessionAuditData.inspector === "לא צוין") { alert("נא להזין את שם המבקר לפני השמירה."); return; }
-        
-        let historyArray = JSON.parse(localStorage.getItem('qc_intel_pro_history') || '[]');
-        historyArray.unshift(sessionAuditData); // הוספה לראש הרשימה
-        localStorage.setItem('qc_intel_pro_history', JSON.stringify(historyArray));
-        
-        document.getElementById('modal_pdf_export').style.display = 'block';
+    function saveAudit() {
+        session.inspector = document.getElementById('inspector_name').value || "לא צוין";
+        if(session.inspector === "לא צוין") { alert("הכנס שם מבקר"); return; }
+        let history = JSON.parse(localStorage.getItem('qc_intel_v12_history') || '[]');
+        history.unshift(session);
+        localStorage.setItem('qc_intel_v12_history', JSON.stringify(history));
+        document.getElementById('modal_pdf').style.display = 'block';
     }
 
-    function clearSystemData() {
-        if(confirm("האם אתה בטוח שברצונך למחוק את כל היסטוריית הדוחות? פעולה זו אינה הפיכה!")) {
-            localStorage.removeItem('qc_intel_pro_history');
-            location.reload();
-        }
-    }
-
-    /* --- הפקת PDF מקצועי (Desktop View Simulator) --- */
-    function executeProfessionalPDFExport() {
-        const formConfig = MASTER_QC_DATABASE[sessionAuditData.type];
-        const exportZone = document.getElementById('pdf_export_viewport');
-        
-        let htmlMarkup = `
-            <div class="pdf-header-main">
-                <h1 style="color:#0071c5; font-size:44px; margin:0;">דוח בקרת אימות איכות - אינטל חיפה</h1>
-                <h2 style="margin:15px 0; color:#333;">מתחם בדיקה: ${formConfig.name}</h2>
-                <div style="font-size:22px; margin-top:35px; background:#f8f9fa; padding:30px; border-radius:15px; display:inline-block; border:2px solid #eee; min-width:650px;">
-                    <strong>מבקר/ת:</strong> ${sessionAuditData.inspector} | 
-                    <strong>תאריך:</strong> ${new Date(sessionAuditData.date).toLocaleDateString('he-IL')} | 
-                    <strong>ציון סופי:</strong> <span style="color:#0071c5; font-size:30px; font-weight:900;">${sessionAuditData.score}%</span>
+    function exportPDF() {
+        const config = MASTER_DB[session.type];
+        const zone = document.getElementById('pdf_export_zone');
+        let html = `
+            <div style="text-align:center; border-bottom:8px solid var(--intel-blue); padding-bottom:40px; margin-bottom:50px;">
+                <h1 style="color:#0071c5; font-size:44px;">דוח בקרת אימות איכות - אינטל חיפה</h1>
+                <h2>${config.name}</h2>
+                <div style="font-size:22px; margin-top:30px; background:#f8f9fa; padding:30px; border-radius:15px; display:inline-block; border:2px solid #eee; min-width:650px;">
+                    <strong>מבקר:</strong> ${session.inspector} | <strong>תאריך:</strong> ${new Date(session.date).toLocaleDateString('he-IL')} | <strong>ציון:</strong> ${session.score}%
                 </div>
             </div>
-            <table class="pdf-data-table">
-                <thead>
-                    <tr>
-                        <th style="width:40%;">הנושא הנבדק</th>
-                        <th style="width:15%; text-align:center;">סטטוס</th>
-                        <th style="width:45%;">ממצאים והערות המבקר</th>
-                    </tr>
-                </thead>
+            <table class="pdf-table">
+                <thead><tr><th>הסעיף</th><th>סטטוס</th><th>הערות</th></tr></thead>
                 <tbody>`;
-
-        formConfig.structure.forEach((section, sIdx) => {
-            htmlMarkup += `<tr class="pdf-section-title"><td colspan="3">${section.category}</td></tr>`;
-            section.questions.forEach((q, qIdx) => {
+        config.data.forEach((sec, sIdx) => {
+            html += `<tr class="pdf-cat-row"><td colspan="3">${sec.cat}</td></tr>`;
+            sec.qs.forEach((q, qIdx) => {
                 const id = `q_${sIdx}_${qIdx}`;
-                const scoreValue = sessionAuditData.scores[id];
-                const comment = document.getElementById(`note_${id}`).value || "-";
-                
-                let textStatus = "טרם נבדק", colorStatus = "#999";
-                if(scoreValue === 1) { textStatus = "תקין"; colorStatus = "#27ae60"; }
-                else if(scoreValue === 0) { textStatus = "ליקוי"; colorStatus = "#e74c3c"; }
-                else if(scoreValue === -1) { textStatus = "N/A"; colorStatus = "#7f8c8d"; }
-
-                htmlMarkup += `
-                    <tr>
-                        <td style="font-weight:700;">${q}</td>
-                        <td style="text-align:center; font-weight:900; color:${colorStatus}">${textStatus}</td>
-                        <td style="line-height:1.5;">${comment}</td>
-                    </tr>`;
+                const val = session.scores[id];
+                const note = document.getElementById(`note_${id}`).value || "-";
+                let st = val === 1 ? "תקין" : (val === 0 ? "ליקוי" : "N/A");
+                html += `<tr><td style="font-weight:700;">${q}</td><td style="text-align:center;">${st}</td><td>${note}</td></tr>`;
             });
         });
+        html += `</tbody></table>`;
+        const summary = document.getElementById('audit_summary').value;
+        if(summary) html += `<div style="margin-top:50px; padding:35px; border:4px solid #0071c5; background:#fcfcfc;"><h3>סיכום מנהלים:</h3><p style="font-size:19px; line-height:1.8;">${summary}</p></div>`;
+        zone.innerHTML = html;
 
-        htmlMarkup += `</tbody></table>`;
-        
-        const finalNotes = document.getElementById('audit_final_notes_ui').value;
-        if(finalNotes) {
-            htmlMarkup += `<div style="margin-top:55px; padding:35px; border:4px solid #0071c5; border-radius:20px; background:#fcfcfc;">
-                <h3 style="margin-top:0; color:#0071c5; font-size:26px;">סיכום ומסקנות הביקורת:</h3>
-                <p style="white-space:pre-wrap; font-size:19px; line-height:1.8; color:#333;">${finalNotes}</p>
-            </div>`;
-        }
-        
-        htmlMarkup += `<div style="margin-top:80px; text-align:center; font-size:14px; color:#aaa; border-top:2px solid #eee; padding-top:30px;">הופק באמצעות מערכת ניהול דוחות אינטל חיפה - ניר עציון v12.0 | פנימי לשימוש אינטל</div>`;
-
-        exportZone.innerHTML = htmlMarkup;
-
-        // הפתרון הסופי לחיתוך באייפון: דימוי רוחב דסקטופ (1200px) בזיכרון הרינדור
-        const pdfOptions = {
+        const opt = {
             margin: 12,
-            filename: `Intel_QC_Report_${sessionAuditData.inspector}.pdf`,
+            filename: `Intel_QC_${session.inspector}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { 
-                scale: 2, 
-                useCORS: true,
-                width: 1200, // מכריח רוחב רחב מאוד למניעת חיתוך הצד הימני
-                windowWidth: 1200,
-                x: 0, y: 0
-            },
+            html2canvas: { scale: 2, useCORS: true, width: 1250, windowWidth: 1250 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
-        html2pdf().set(pdfOptions).from(exportZone).output('blob').then(blob => {
-            const pdfFile = new File([blob], `Audit_${sessionAuditData.inspector}.pdf`, { type: 'application/pdf' });
-            if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-                navigator.share({ files: [pdfFile], title: 'דוח בקרת אימות איכות - אינטל' });
+        html2pdf().set(opt).from(zone).output('blob').then(blob => {
+            const file = new File([blob], "Report.pdf", { type: 'application/pdf' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({ files: [file], title: 'דוח ביקורת איכות' });
             } else {
-                const pdfUrl = URL.createObjectURL(blob);
-                window.open(pdfUrl);
+                window.open(URL.createObjectURL(blob));
             }
-            document.getElementById('modal_pdf_export').style.display = 'none';
+            document.getElementById('modal_pdf').style.display = 'none';
         });
     }
 
-    // אתחול מערכת בטעינה
-    window.onload = refreshSystemStats;
+    window.onload = refreshStats;
 </script>
 </body>
 </html>
