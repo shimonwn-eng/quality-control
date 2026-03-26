@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ביקורת מסעדה - רשת שימי'ס</title>
+    <style>
+        :root { --p: #2c3e50; --s: #e67e22; --g: #27ae60; --r: #e74c3c; --bg: #f4f6f7; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--p); }
+        
+        .dashboard { 
+            position: sticky; top: 0; z-index: 1000; background: white; 
+            display: flex; justify-content: space-around; padding: 15px 5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-bottom: 3px solid var(--s);
+        }
+        .gauge-container { text-align: center; width: 45%; }
+        .gauge-label { font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #666; }
+        .gauge-bg { width: 90px; height: 90px; border-radius: 50%; border: 6px solid #eee; margin: auto; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; transition: 0.5s; }
+
+        .container { padding: 15px; max-width: 600px; margin: auto; }
+        
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; background: #fff; }
+
+        .cat-title { color: white; padding: 12px; border-radius: 6px; margin: 25px 0 10px; font-weight: bold; font-size: 16px; text-align: center; }
+        .c1 { background: #3498db; } .c2 { background: #9b59b6; } .c3 { background: #e67e22; }
+
+        .audit-item { background: white; padding: 12px; border-radius: 10px; margin-bottom: 12px; border-right: 5px solid #ddd; }
+        .question-text { font-weight: 600; margin-bottom: 8px; font-size: 15px; }
+        .score-row { display: flex; gap: 10px; align-items: center; }
+        
+        .pass-btn, .fail-btn { flex: 1; padding: 12px; border: 2px solid #ddd; background: #f9f9f9; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .pass-btn.active { background: var(--g); color: white; border-color: var(--g); }
+        .fail-btn.active { background: var(--r); color: white; border-color: var(--r); }
+
+        /* אזור הערות ותמונה */
+        .extras-row { display: flex; gap: 8px; margin-top: 10px; }
+        .note-input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; margin: 0; background: #fafafa; }
+        .cam-btn { background: #eee; border: 1px solid #ddd; border-radius: 8px; padding: 0 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: 0.2s; }
+        .cam-btn:hover { background: #e0e0e0; }
+        .thumb-preview { max-width: 80px; max-height: 80px; border-radius: 8px; margin-top: 8px; display: none; border: 1px solid #ccc; }
+
+        .btn { width: 100%; padding: 18px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-primary { background: var(--p); color: white; }
+        .btn-wa { background: #25D366; color: white; }
+
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto; padding: 15px; box-sizing: border-box; }
+        .modal-body { background: white; padding: 20px; border-radius: 15px; }
+        
+        #login { padding: 50px 20px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div id="login" class="container">
+    <h2>🍔 ביקורת מסעדה - רשת שימי'ס</h2>
+    <input type="password" id="pass" placeholder="קוד גישה (2024)">
+    <button class="btn btn-primary" onclick="checkPass()">כניסה למערכת</button>
+</div>
+
+<div id="app" style="display:none;">
+    <div class="dashboard">
+        <div class="gauge-container">
+            <div class="gauge-label">ציון (נדרש 45)</div>
+            <div id="g-curr" class="gauge-bg">0/50</div>
+        </div>
+        <div class="gauge-container">
+            <div class="gauge-label">סטטוס ביקורת</div>
+            <div id="g-status" class="gauge-bg" style="border-color: #ddd; color: #999; font-size: 16px;">ממתין</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <label>בחר סניף נבדק:</label>
+            <select id="st_name">
+                <option value="">-- בחר סניף --</option>
+                <option>שימיס המרפסת</option>
+                <option>שימיס חומוסיה</option>
+                <option>שימיס בני יהודה</option>
+                <option>שימיס מודיעין</option>
+                <option>שימיס חדרה</option>
+                <option>שימיס ירושלים</option>
+            </select>
+            
+            <div class="grid-2">
+                <div>
+                    <label>שם המבקר:</label>
+                    <input type="text" id="insp_name" placeholder="השם שלך">
+                </div>
+                <div>
+                    <label>טלפון מנהל (וואטסאפ):</label>
+                    <input type="tel" id="mgr_phone" placeholder="0501234567">
+                </div>
+                <div>
+                    <label>שעת התחלה:</label>
+                    <input type="time" id="time_start">
+                </div>
+                <div>
+                    <label>שעת סיום:</label>
+                    <input type="time" id="time_end">
+                </div>
+            </div>
+        </div>
+
+        <div id="questions_area"></div>
+
+        <div class="card">
+            <label>הערות סיכום:</label>
+            <textarea id="gen_note" rows="3" placeholder="הערות כלליות על המשמרת..."></textarea>
+        </div>
+
+        <button class="btn btn-primary" onclick="showSummary()">הצג סיכום ושליחה</button>
+    </div>
+</div>
+
+<div id="modal">
+    <div class="modal-body">
+        <h2 style="margin-top:0">📋 סיכום דוח שימי'ס</h2>
+        <div id="sum-text" style="white-space: pre-wrap; font-size: 14px; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #eee;"></div>
+        <button class="btn btn-wa" onclick="sendWA()" style="margin-top: 15px;">שלח בוואטסאפ 🟢</button>
+        <button class="btn" style="background:#666; color:white;" onclick="closeModal()">חזרה לעריכה</button>
+    </div>
+</div>
+
+<script>
+    const schema = [
+        { t: "🧹 ניקיון (20 נקודות)", c: "c1", qs: [
+            "1. שולחנות נקיים", "2. כיסאות נקיים", "3. רצפת אזור הישיבה נקייה", "4. חלונות וזכוכיות נקיים", "5. פחי אשפה נקיים וללא אבק", 
+            "6. מסכי הקיוסקים נקיים", "7. אזור הקופה / טאבלטים נקיים", "8. מכונות שתייה / תה נקיות", "9. מכונת גלידה נקייה", "10. מכונת ברד נקייה",
+            "11. מגשי טפטוף נקיים", "12. רצפת המטבח נקייה", "13. פינות המטבח נקיות", "14. ידיות מקררים נקיות", "15. פנים מקררים נקי",
+            "16. מגירות מקרר נקיות", "17. מדפים מסודרים ונקיים", "18. אזורי אחסון נקיים", "19. אין קרטונים במטבח", "20. המסעדה נראית נקייה באופן כללי"
+        ]},
+        { t: "🤝 אירוח (15 נקודות)", c: "c2", qs: [
+            "21. קשר עין וברכה ללקוח תוך 10 שניות", "22. הצוות מחייך ומדבר בנימוס עם הלקוחות", "23. הצוות יוצר תחושת אירוח חמה ללקוחות", "24. הצוות מבצע Second Mile Service", "25. הצוות ניגש לשולחנות כאשר מתאים",
+            "26. כאשר שקט במסעדה הצוות מתקשר עם הלקוחות", "27. הלקוחות מקבלים תודה ביציאה", "28. הצוות מודע ללקוחות שנכנסים למסעדה", "29. שליחים מקבלים התייחסות מכבדת ומהירה", "30. הצוות אינו עומד ללא עבודה",
+            "31. הצוות מחפש עבודה בזמן שקט", "32. הפסקות מנוהלות נכון", "33. מוזיקה פועלת ומתאימה לאווירה", "34. האווירה במסעדה נעימה ומזמינה", "35. חוויית האירוח הכללית טובה"
+        ]},
+        { t: "🍔 אוכל ובטיחות מזון (15 נקודות)", c: "c3", qs: [
+            "36. כל העובדים עם חולצת שימי'ס וכובע", "37. המדים נקיים ומסודרים", "38. כל מוצרי המזון מסומנים בתאריך", "39. FIFO מיושם נכון", "40. רטבים ומוצרים מסודרים במקרר",
+            "41. תחנות העבודה במטבח מסודרות", "42. אזור הכנות נקי", "43. ציוד המטבח נקי בזמן עבודה", "44. המטבח נראה מאורגן ומסודר", "45. מזון מאוחסן נכון במקררים",
+            "46. טמפרטורת מזון נשמרת כראוי", "47. הכנת ההמבורגרים לפי הסטנדרט", "48. איכות הצ'יפס והטיגון טובה", "49. הצגת האוכל נראית טוב", "50. סטנדרט האוכל עומד ברמת שימי'ס"
+        ]}
+    ];
+
+    let userScores = {};
+
+    function checkPass() {
+        if(document.getElementById('pass').value === "2024") {
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            
+            const now = new Date();
+            document.getElementById('time_start').value = now.toTimeString().slice(0,5);
+            
+            renderQs();
+        } else alert("קוד שגוי");
+    }
+
+    function renderQs() {
+        const area = document.getElementById('questions_area');
+        schema.forEach((sec, sIdx) => {
+            area.innerHTML += `<div class="cat-title ${sec.c}">${sec.t}</div>`;
+            sec.qs.forEach((q, qIdx) => {
+                const qId = `q_${sIdx}_${qIdx}`;
+                area.innerHTML += `
+                <div class="audit-item" id="item_${qId}">
+                    <div class="question-text">${q}</div>
+                    <div class="score-row">
+                        <button class="pass-btn" onclick="setScore('${qId}', 1, this)">✅ עבר</button>
+                        <button class="fail-btn" onclick="setScore('${qId}', 0, this)">❌ לא עבר</button>
+                    </div>
+                    <div class="extras-row">
+                        <input type="text" class="note-input" id="note_${qId}" placeholder="הערה (רשות)...">
+                        <label class="cam-btn" title="צלם תמונה">
+                            📷
+                            <input type="file" id="img_${qId}" accept="image/*" capture="environment" style="display:none" onchange="previewImg(this, '${qId}')">
+                        </label>
+                    </div>
+                    <img id="thumb_${qId}" class="thumb-preview" src="" alt="תצוגה מקדימה">
+                </div>`;
+            });
+        });
+    }
+
+    function previewImg(input, qId) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById(`thumb_${qId}`);
+                img.src = e.target.result;
+                img.style.display = 'block';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function setScore(qId, val, btnEl) {
+        userScores[qId] = val;
+        
+        const row = btnEl.parentElement;
+        row.querySelector('.pass-btn').classList.remove('active');
+        row.querySelector('.fail-btn').classList.remove('active');
+        
+        btnEl.classList.add('active');
+        
+        if(val === 0) {
+            document.getElementById(`item_${qId}`).style.borderColor = "#e74c3c";
+        } else {
+            document.getElementById(`item_${qId}`).style.borderColor = "#27ae60";
+        }
+
+        calcScore();
+    }
+
+    function calcScore() {
+        let totalPass = 0;
+        
+        for (const key in userScores) {
+            totalPass += userScores[key];
+        }
+
+        const gauge = document.getElementById('g-curr');
+        const status = document.getElementById('g-status');
+        
+        gauge.innerText = `${totalPass}/50`;
+        
+        if (totalPass >= 45) {
+            gauge.style.borderColor = "#27ae60"; gauge.style.color = "#27ae60";
+            status.innerText = "עובר ✅"; status.style.color = "#27ae60"; status.style.borderColor = "#27ae60";
+        } else {
+            gauge.style.borderColor = "#e74c3c"; gauge.style.color = "#e74c3c";
+            status.innerText = "נכשל ❌"; status.style.color = "#e74c3c"; status.style.borderColor = "#e74c3c";
+        }
+    }
+
+    function showSummary() {
+        const station = document.getElementById('st_name').value;
+        if(!station) return alert("אנא בחר סניף מהרשימה!");
+        
+        const totalPass = Object.values(userScores).reduce((a, b) => a + b, 0);
+        const answeredCount = Object.keys(userScores).length;
+
+        if(answeredCount < 50) {
+            if(!confirm(`שמת לב? ענית רק על ${answeredCount} מתוך 50 שאלות. האם להמשיך לסיכום?`)) return;
+        }
+
+        const now = new Date();
+        if(!document.getElementById('time_end').value) {
+            document.getElementById('time_end').value = now.toTimeString().slice(0,5);
+        }
+
+        let report = `*דוח ביקורת - ${station}*\n`;
+        report += `מבקר: ${document.getElementById('insp_name').value}\n`;
+        report += `תאריך: ${now.toLocaleDateString()}\n`;
+        report += `התחלה: ${document.getElementById('time_start').value} | סיום: ${document.getElementById('time_end').value}\n`;
+        report += `------------------------\n`;
+        report += `*ציון סופי: ${totalPass}/50*\n`;
+        report += `*סטטוס:* ${totalPass >= 45 ? '✅ עבר' : '❌ לא עבר'}\n`;
+        report += `------------------------\n\n`;
+        
+        let details = "";
+        schema.forEach((sec, sIdx) => {
+            sec.qs.forEach((q, qIdx) => {
+                const qId = `q_${sIdx}_${qIdx}`;
+                const note = document.getElementById(`note_${qId}`).value;
+                const hasImg = document.getElementById(`img_${qId}`).files.length > 0;
+                
+                // נוסיף לדוח את השאלה רק אם נכשלה, או אם יש בה הערה/תמונה
+                if(userScores[qId] === 0 || note || hasImg) {
+                    let mark = userScores[qId] === 0 ? "❌" : "✅";
+                    details += `${mark} ${q}\n`;
+                    if(note) details += `   📝 הערה: ${note}\n`;
+                    if(hasImg) details += `   📷 [צולמה תמונה - נא לצרף ידנית]\n`;
+                }
+            });
+        });
+
+        if(details !== "") {
+            report += `*פירוט הערות וליקויים:*\n${details}\n`;
+        } else if (totalPass === 50) {
+            report += `*הכל עבר בהצלחה! אין ליקויים או הערות.* 🎉\n\n`;
+        }
+
+        report += `*הערה כללית:* ${document.getElementById('gen_note').value || "אין"}`;
+        
+        document.getElementById('sum-text').innerText = report;
+        document.getElementById('modal').style.display = 'block';
+    }
+
+    function sendWA() {
+        const phone = document.getElementById('mgr_phone').value;
+        if(!phone) return alert("אנא הזן טלפון מנהל לשליחה");
+        
+        const text = encodeURIComponent(document.getElementById('sum-text').innerText);
+        window.open(`https://wa.me/972${phone.startsWith('0') ? phone.substring(1) : phone}?text=${text}`);
+        closeModal();
+    }
+
+    function closeModal() { document.getElementById('modal').style.display = 'none'; }
+</script>
+</body>
+</html>

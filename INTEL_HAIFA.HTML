@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>מערכת בקרת איכות - אינטל חיפה (ניר עציון)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root { --p: #0071c5; --s: #00aeef; --g: #27ae60; --y: #f39c12; --r: #e74c3c; --na: #95a5a6; --bg: #f4f6f7; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 0; color: #333; }
+        
+        .dashboard { position: sticky; top: 0; z-index: 1000; background: white; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-bottom: 3px solid var(--p); }
+        .dash-top { display: flex; justify-content: space-between; margin-bottom: 12px; }
+        .gauge-container { text-align: center; width: 32%; }
+        .gauge-label { font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #666; white-space: nowrap; }
+        .gauge-bg { width: 70px; height: 70px; border-radius: 50%; border: 6px solid #eee; margin: auto; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; transition: 0.5s; color: var(--p); }
+        .dash-inputs { display: flex; gap: 10px; }
+        .dash-inputs input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; margin-bottom: 0; }
+
+        .container { padding: 15px; max-width: 600px; margin: auto; }
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: var(--p); }
+        select, textarea, input[type="time"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; background: #fff; }
+
+        .cat-title { background: var(--p); color: white; padding: 12px; border-radius: 6px; margin: 25px 0 10px; font-weight: bold; font-size: 16px; text-align: center; }
+        .audit-item { background: white; padding: 12px; border-radius: 10px; margin-bottom: 12px; border-right: 5px solid #ddd; }
+        .question-text { font-weight: 600; margin-bottom: 10px; font-size: 14px; }
+        
+        .score-row { display: flex; gap: 5px; margin-bottom: 8px; }
+        .score-btn { flex: 1; padding: 10px 5px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; text-align: center; }
+        .btn-pass.active { background: var(--g); color: white; border-color: var(--g); }
+        .btn-part.active { background: var(--y); color: white; border-color: var(--y); }
+        .btn-fail.active { background: var(--r); color: white; border-color: var(--r); }
+        .btn-na.active { background: var(--na); color: white; border-color: var(--na); }
+
+        .extras-row { display: flex; gap: 8px; margin-top: 5px; }
+        .note-input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background: #fafafa; margin-bottom:0;}
+        .cam-btn { background: #eee; border: 1px solid #ddd; border-radius: 6px; padding: 0 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .thumb-preview { max-width: 80px; max-height: 80px; border-radius: 6px; margin-top: 8px; display: none; border: 1px solid #ccc; }
+
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; display: block; text-align: center; }
+        .btn-primary { background: var(--p); color: white; }
+        
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto; padding: 15px; box-sizing: border-box; }
+        .modal-body { background: white; padding: 20px; border-radius: 12px; max-width: 600px; margin: auto; margin-top: 20px;}
+
+        #preview-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f6f7; z-index: 3000; overflow-y: auto; }
+        .preview-header { position: sticky; top: 0; background: white; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; z-index: 3010; border-bottom: 3px solid var(--p); }
+        .preview-body { padding: 20px; max-width: 800px; margin: auto; background: white; margin-top: 20px; margin-bottom: 40px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        .history-item { background: white; padding: 15px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        /* הגדרה נקייה לאזור ההדפסה: רוחב מדויק של 800 כדי להתאים לזום של המסך */
+        #print-area { display: none; width: 800px; max-width: 800px; background: white; margin: 0 auto; padding: 20px; direction: rtl; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+
+<div id="login" class="container" style="padding: 50px 20px; text-align: center;">
+    <h2>🏢 מערכת בקרת איכות</h2>
+    <p style="color: #666;">אינטל חיפה - ניר עציון</p>
+    <div style="background: #e8f4f8; padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 12px; color: #0071c5; border: 1px solid #bce8f1;">
+        🔒 סביבה מאובטחת. הנתונים מוצפנים ונשמרים במכשיר זה בלבד.
+    </div>
+    <input type="password" id="pass" placeholder="קוד גישה (2024)" style="margin-top: 20px; width: 100%; padding: 12px; font-size:16px; border-radius:8px; border:1px solid #ccc;">
+    <button class="btn btn-primary" onclick="checkPass()">כניסה למערכת</button>
+</div>
+
+<div id="startup_menu" class="container" style="display:none; text-align: center; padding: 50px 20px;">
+    <h2>🏢 מערכת בקרת איכות</h2>
+    <p style="color: #666; margin-bottom: 30px;">בחר פעולה להמשך:</p>
+    <button class="btn btn-primary" onclick="startNewAudit()">➕ התחל ביקורת חדשה</button>
+    <button class="btn" style="background:#f39c12; color:white; margin-top:20px;" onclick="showHistoryMenu()">📂 ערוך ביקורת קודמת</button>
+</div>
+
+<div id="history_menu" class="container" style="display:none;">
+    <h2 style="text-align: center;">📂 ביקורות קודמות (נשמרו במכשיר)</h2>
+    <div id="history_list" style="margin-top:20px;"></div>
+    <button class="btn" style="background:#666; color:white; margin-top:20px;" onclick="backToStartup()">חזור לתפריט הראשי</button>
+</div>
+
+<div id="app" style="display:none;">
+    <input type="hidden" id="audit_id" value="">
+    
+    <div class="dashboard">
+        <div class="dash-top">
+            <div class="gauge-container">
+                <div class="gauge-label">ציון נוכחי</div>
+                <div id="g-curr" class="gauge-bg">0%</div>
+            </div>
+            <div class="gauge-container">
+                <div class="gauge-label">ממוצע מצטבר</div>
+                <div id="g-avg" class="gauge-bg" style="border-color: #ddd; color: #666;">-</div>
+                <div id="avg-count" style="font-size: 11px; color: #888; margin-top: 4px; font-weight: bold;">0 ביקורות</div>
+            </div>
+            <div class="gauge-container">
+                <div class="gauge-label">סטטוס</div>
+                <div id="g-status" class="gauge-bg" style="border-color: #ddd; color: #999; font-size: 14px;">ממתין</div>
+            </div>
+        </div>
+        <div class="dash-inputs">
+            <input type="text" id="insp_name" placeholder="שם המבקר/ת">
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <label>בחר טופס לביצוע:</label>
+            <select id="form_selector" onchange="loadForm()" style="border: 2px solid var(--p); font-weight: bold;">
+                <option value="">-- בחר טופס מהרשימה --</option>
+                <optgroup label="🧹 סיורי ניקיון">
+                    <option value="clean_ninedine">סיור ניקיון - Nine Dine</option>
+                    <option value="clean_bento">סיור ניקיון - Bento</option>
+                    <option value="clean_nona">סיור ניקיון - Nona</option>
+                    <option value="clean_cafe">סיור ניקיון - בתי קפה (Ilan's)</option>
+                </optgroup>
+                <optgroup label="🍔 בטיחות במזון">
+                    <option value="food_ninedine">בטיחות מזון - Nine Dine</option>
+                    <option value="food_bento">בטיחות מזון - Bento</option>
+                    <option value="food_nona">בטיחות מזון - Nona</option>
+                    <option value="food_cafe">בטיחות מזון - בתי קפה</option>
+                </optgroup>
+                <optgroup label="📅 פגי תוקף ו-FIFO">
+                    <option value="expiry_ninedine">ביקורת פגי תוקף - Nine Dine</option>
+                    <option value="expiry_bento">ביקורת פגי תוקף - Bento</option>
+                    <option value="expiry_nona">ביקורת פגי תוקף - Nona</option>
+                    <option value="expiry_marlog">ביקורת פגי תוקף וניקיון - מרלו"ג</option>
+                </optgroup>
+                <optgroup label="⚠️ בטיחות בעבודה">
+                    <option value="safety_work">בטיחות בעבודה</option>
+                </optgroup>
+            </select>
+            
+            <div class="grid-2" style="margin-top: 15px;">
+                <div><label>שעת התחלה:</label><input type="time" id="time_start"></div>
+                <div><label>שעת סיום:</label><input type="time" id="time_end"></div>
+            </div>
+        </div>
+
+        <div id="questions_area">
+            <div style="text-align:center; padding: 40px; color: #7f8c8d; border: 2px dashed #ccc; border-radius: 10px;">
+                👆 יש לבחור טופס ביקורת מהרשימה.
+            </div>
+        </div>
+
+        <div class="card" id="summary_card" style="display:none;">
+            <label>הערות מנהלים לסיכום:</label>
+            <textarea id="gen_note" rows="3" placeholder="הערות לסיכום הביקורת..."></textarea>
+            <button class="btn btn-primary" onclick="showSummaryModal()">💾 שמירת נתונים והצגת דוח לסיכום</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal">
+    <div class="modal-body">
+        <h2 style="margin-top:0">📋 דוח סיכום נשמר בהצלחה!</h2>
+        
+        <div id="sum-text" style="white-space: pre-wrap; font-size: 14px; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #ccc; max-height: 200px; overflow-y: auto; margin-bottom: 15px;"></div>
+        
+        <div style="border: 3px solid #0071c5; background-color: #f0f8ff; padding: 20px; border-radius: 8px; margin-top: 15px; text-align: center;">
+            <h3 style="color: #0071c5; margin-top: 0; font-size: 18px; margin-bottom: 10px;">📄 הפקת דוח PDF</h3>
+            <p style="font-size: 13px; color: #555; margin-bottom: 15px;">מומלץ לצפות בתצוגה מקדימה של הדוח המלא לפני השליחה לוואטסאפ.</p>
+            
+            <button class="btn btn-primary" style="margin-bottom: 10px;" onclick="openPreview()">👁️ תצוגה מקדימה של הדוח המלא</button>
+            <button style="background: transparent; color: #e74c3c; border: 2px solid #e74c3c; border-radius: 8px; padding: 10px; font-weight: bold; font-size: 14px; cursor: pointer; width: 100%;" onclick="processDirectPDFShare()">📤 דלג לשליחה מהירה בוואטסאפ</button>
+        </div>
+
+        <button class="btn" style="background:#666; color:white; margin-top: 20px; width: 100%;" onclick="closeModal()">✏️ חזרה לעריכת הדוח</button>
+    </div>
+</div>
+
+<div id="preview-modal">
+    <div class="preview-header">
+        <button class="btn" style="width: auto; margin: 0; background: #95a5a6; color: white; padding: 10px 20px; font-size: 14px;" onclick="closePreview()">חזור</button>
+        <h3 style="margin: 0; font-size: 18px; color: #0071c5;">תצוגה מקדימה</h3>
+        <button id="btn-preview-share" class="btn" style="width: auto; margin: 0; background: #e74c3c; color: white; padding: 10px 20px; font-size: 14px;" onclick="processDirectPDFShareFromPreview()">📤 אישור ושליחה PDF</button>
+    </div>
+    <div class="preview-body" id="preview-content" style="overflow-x: auto;">
+        </div>
+</div>
+
+<div id="print-area"></div>
+
+<script>
+    const formsDB = {
+        "clean_ninedine": { title: "סיור ניקיון - Nine Dine", schema: [
+            { cat: "רחבת כניסה", qs: ["האם איזור הקופות נקי", "האם עמדת הצטיידות נקיה", "האם עמדת שטיפת ידיים נקייה", "האם כניסה לחדר אוכל נקי", "האם יש סבון ונייר תקינים"] },
+            { cat: "עמדות הגשה", qs: ["האם פלנצ'ות נקיות", "האם מנדפים נקיים", "האם דלפקי הגשה נקיים", "האם פסים קרים נקיים", "האם פסים חמים נקיים", "האם רצפה נקייה משאריות - הגשה", "האם יש סבון ונייר"] },
+            { cat: "חדר אוכל", qs: ["האם הריצפה נקייה", "האם שולחנות וכסאות נקיים"] },
+            { cat: "מטבח חם", qs: ["האם כיריים נקיים", "האם צ'יפסר ופלנצ'ה נקיים", "האם מקררים/מקפיאים נקיים", "האם מנדפים נקיים", "האם רצפה נקייה משאריות", "האם קירות נקיים", "האם פחי אשפה נקיים", "האם יש סבון ונייר"] },
+            { cat: "חדר סלטים", qs: ["מג'ימיקס וסכינים נקיים", "משטחי עבודה נקיים", "מקררים נקיים", "פחי אשפה נקיים", "עגלות ופיילות נקיות", "רצפה נקייה משאריות", "קירות נקיים", "האם יש סבון ונייר"] },
+            { cat: "חדר חיטוי", qs: ["מתקן חיטוי נקי", "משטחי עבודה נקיים", "מקרר סלטים נקי", "עגלות ופיילות נקיות", "רצפה נקייה משאריות", "קירות נקיים", "פחי אשפה נקיים", "האם יש סבון ונייר"] },
+            { cat: "שטיפה ומדיחים", qs: ["מסוע חיצוני נקי", "פורקו דיזות", "פורקו רשתות", "קירות פנים מדיח נקיים", "פחי אשפה נקיים", "רצפה נקייה", "מדיח גסטרונום נקי", "מדפי אחסון נקיים", "עגלות אחסון צלחות נקיות", "קרשי עבודה נקיים", "מאצרות כימיקלים נקיות"] },
+            { cat: "קצבייה", qs: ["כיורים נקיים", "משטחי עבודה נקיים", "קירות נקיים", "מדפים נקיים", "מקררים נקיים", "מטחנת בשר נקייה", "רצפה נקייה", "פחים נקיים"] },
+            { cat: "קונדיטוריה", qs: ["תנורי אפייה נקיים", "משטחי עבודה נקיים", "מקררים נקיים", "מיקסר וכלים נקיים", "רצפה ופחים נקיים", "קירות נקיים"] }
+        ]},
+        "clean_bento": { title: "סיור ניקיון - Bento", schema: [
+            { cat: "כניסה לחדר אוכל", qs: ["איזור קופות נקי", "עמדת הצטיידות נקיה", "איזור כניסה נקי"] },
+            { cat: "עמדות הגשה", qs: ["פלנצ'ות נקיות", "צ'יפסרים מכוסים ומכובים", "מנדפים נקיים", "דלפקי הגשה נקיים", "פסים קרים וחמים נקיים", "רצפה נקייה", "מקררים בדלפקים נקיים"] },
+            { cat: "חדר אוכל מקצה לקצה", qs: ["רצפה נקייה", "שולחנות וכסאות נקיים", "אזור חומוס נקי", "אזור מעדניה נקי"] },
+            { cat: "מטבח חם", qs: ["כיריים וצ'יפסר נקיים", "מקררים נקיים", "מנדפים וקירות נקיים", "רצפה ופחים נקיים"] },
+            { cat: "סלטים וחיטוי", qs: ["מג'ימיקס נקי", "משטחים ופיילות נקיים", "רצפה ופחים נקיים", "ג'קוזי חיטוי נקי"] },
+            { cat: "קצבייה", qs: ["כיורים ומשטחים נקיים", "קירות ומדפים נקיים", "מטחנה ורצפה נקיות"] },
+            { cat: "חדר שטיפה", qs: ["מסוע נקי", "דיזות ורשתות פורקו", "פנים מדיח נקי", "מדיח גסטרונום נקי", "רצפה, פחים וקירות נקיים", "מאצרות כימיקלים נקיות"] }
+        ]},
+        "clean_nona": { title: "סיור ניקיון - Nona", schema: [
+            { cat: "חדר אוכל והגשה", qs: ["קופות וכניסה נקיים", "עמדת הצטיידות נקיה", "פלנצ'ות, מנדפים ודלפקים נקיים", "פסים קרים וחמים נקיים", "רצפה נקייה", "אמצעי היגיינה תקינים"] },
+            { cat: "מטבח חם וסלטים", qs: ["כיריים, צ'יפסר ומקררים נקיים", "מנדפים וקירות נקיים", "רצפה ופחים נקיים", "מג'ימיקס, משטחים ופיילות נקיים"] },
+            { cat: "חיטוי וקונדיטוריה", qs: ["מתקן חיטוי נקי", "משטחים ורצפה נקיים", "תנורי אפייה ומיקסר נקיים"] },
+            { cat: "חדר שטיפה", qs: ["מסוע נקי", "דיזות ורשתות פורקו", "פנים מדיח נקי", "רצפה, פחים וקירות נקיים", "מאצרות כימיקלים נקיות"] }
+        ]},
+        "clean_cafe": { title: "סיור ניקיון - בתי קפה", schema: [
+            { cat: "רחבת כניסה ובר", qs: ["כניסה נקי", "קופות ועמדת TA נקיות", "פחים מרוקנים", "עמדת הגשה ובר נקיים", "תנורים/טאבון נקיים", "רצפה נקייה", "מכונות (אייס, קפה, תפוזים) נקיות", "סכינים וקרשים נקיים", "אמצעי היגיינה מלאים"] }
+        ]},
+        "food_ninedine": { title: "בטיחות מזון - Nine Dine", schema: [
+            { cat: "מערכות קירור", qs: ["שימוש במקררים לפי ייעוד?", "הפרדה בין גולמי למוכן?", "מזון מכוסה/עטוף?", "מדבקות תאריך פתיחה?", "אחסון ביצים תקין?"] },
+            { cat: "תהליכי ייצור", qs: ["עבודה עפ קוד צבעים?", "ברז וכיור תקינים?", "מניעת זיהום צולב?", "תיעוד הפשרות בישול תרמי?", "סדר עגלות נכון?", "שמן צ'יפסר נקי ומתועד?"] },
+            { cat: "עמדות הגשה ועובדים", qs: ["טמפ מזון בהגשה תקינה?", "שמירת דוגמאות מזון (72 ש')?", "היעדר מגע מזון ועץ?", "לבוש עובדים תקין (כפפות, כובע)?", "הימנעות משימוש בטלפון?"] }
+        ]},
+        "food_bento": { title: "בטיחות מזון - Bento", schema: [
+            { cat: "קירור וחיטוי", qs: ["שימוש במקררים לפי ייעוד?", "הפרדה בין גולמי למוכן?", "מזון עטוף ומתועד?", "בדיקת ריכוז חומר חיטוי תקינה?", "תיעוד חיטוי בטופס?"] },
+            { cat: "ייצור והגשה", qs: ["קוד צבעים נשמר?", "ברז וכיור תקינים?", "מניעת זיהום צולב בקצבייה?", "מעקב טמפ בישול ושחזור?", "שמן צ'יפסר נקי ומתועד?", "טמפ הגשה תקינה?", "לבוש עובדים תקין?"] }
+        ]},
+        "food_nona": { title: "בטיחות מזון - Nona", schema: [
+            { cat: "כללי בטיחות", qs: ["שימוש במקררים לפי ייעוד?", "הפרדה בין גולמי למוכן?", "מזון עטוף עם תאריך?", "עבודה עפ קוד צבעים?", "בדיקת חומר חיטוי ותיעוד?", "שמן טיגון נקי ומתועד?", "טמפ הגשה תקינה?", "שמירת דוגמאות מזון (72 ש')?", "לבוש והיגיינת עובדים?"] }
+        ]},
+        "food_cafe": { title: "בטיחות מזון - בתי קפה", schema: [
+            { cat: "מחסן והגשה", qs: ["האם נצפו מוצרים פגי תוקף?", "מזון מצופה/עטוף?", "מדבקות תאריך וייצור?", "אחסון בהגבהה והפרדה?", "מדבקה למוצרי הפשרה?", "לבוש עובדים (כובע/כפפות)?", "הימנעות מעישון בשטח המטבח?"] }
+        ]},
+        "expiry_ninedine": { title: "פגי תוקף - Nine Dine", schema: [
+            { cat: "מקררים קומה 0", qs: ["מקרר 4 מטבח חם - פגי תוקף? טפסים?", "מקרר 3 בעד בתהליך - פגי תוקף?", "מקררי הפשרות (עוף/בקר/דגים) - פגי תוקף?", "מקרר 7 חלבי מוגמר - פגי תוקף?"] }
+        ]},
+        "expiry_bento": { title: "פגי תוקף - Bento", schema: [
+            { cat: "מקררים מקומיים", qs: ["מקרר 9 ירקות גולמי - פגי תוקף?", "מקרר 5 מוגמר חם - פגי תוקף?", "מקרר 1 סלטייה - פגי תוקף?", "מקררי הפשרות (קצבייה) - פגי תוקף?"] }
+        ]},
+        "expiry_nona": { title: "פגי תוקף - Nona", schema: [
+            { cat: "מקררים", qs: ["מקרר 1 ירקות גולמי - פגי תוקף?", "מקררי מוגמר (3,4,9) - פגי תוקף?", "מקרר 6 מעדנים - פגי תוקף?", "מקרר 7 חלבי - פגי תוקף?"] }
+        ]},
+        "expiry_marlog": { title: "פגי תוקף - מרלוג", schema: [
+            { cat: "מקפיאים ומקררים (קומה -2)", qs: ["מקרר 15 (ירקות מחוטאים) - פגי תוקף? נקי?", "מקרר 16 (ירקות גולמי) - פגי תוקף?", "מקפיאים (עוף, קפואים, בקר, דגים) - נקי? פגי תוקף?"] },
+            { cat: "מחסנים יבשים", qs: ["מחסן ראשי - מסודר? הגבהה? FIFO? פגי תוקף?", "מחסני קונדיטוריה ובתי קפה - מסודר? פגי תוקף?"] }
+        ]},
+        "safety_work": { title: "בטיחות בעבודה", schema: [
+            { cat: "חשמל ותשתיות", qs: ["שימוש ברבי שקע (מפצלים)?", "שקעים ותקעים תקינים ומוגני מים?", "סדר בחיווט דלפקים?"] },
+            { cat: "ציוד אישי וחומרים", qs: ["נעלי עבודה תקניים?", "כפפות מגן לחומרים מסוכנים/חום?", "אחסון במאצרות משולטות?"] },
+            { cat: "רצפה, צ'יפסר והרמה", qs: ["רצפה נקייה ממים ושמן?", "רצפה ליד צ'יפסר נקייה?", "פינוי שמן קר בלבד?", "הכרת מכונות לפני עבודה?", "שינוע עגלות והרמת משאות בזהירות?"] }
+        ]}
+    };
+
+    let userScores = {};
+    let currentFormId = "";
+
+    let inactivityTime = function () {
+        let time;
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onkeypress = resetTimer;
+        document.ontouchstart = resetTimer;
+
+        function logout() {
+            if(document.getElementById('app').style.display === 'block' || document.getElementById('history_menu').style.display === 'block' || document.getElementById('startup_menu').style.display === 'block') {
+                document.getElementById('app').style.display = 'none';
+                document.getElementById('history_menu').style.display = 'none';
+                document.getElementById('startup_menu').style.display = 'none';
+                document.getElementById('modal').style.display = 'none';
+                document.getElementById('preview-modal').style.display = 'none';
+                document.getElementById('login').style.display = 'block';
+                document.getElementById('pass').value = '';
+                alert("🔒 המערכת ננעלה אוטומטית עקב 15 דקות של חוסר פעילות.");
+            }
+        }
+
+        function resetTimer() {
+            clearTimeout(time);
+            time = setTimeout(logout, 15 * 60 * 1000);
+        }
+    };
+    inactivityTime(); 
+
+    function checkPass() {
+        if(document.getElementById('pass').value === "2024") {
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('startup_menu').style.display = 'block';
+            updateCumulativeScore(); 
+        } else alert("קוד גישה שגוי.");
+    }
+
+    function getSecureAudits() {
+        if(localStorage.getItem('intel_audits')) {
+            try {
+                let oldData = localStorage.getItem('intel_audits');
+                let encoded = btoa(unescape(encodeURIComponent(oldData)));
+                localStorage.setItem('intel_audits_secure', encoded);
+                localStorage.removeItem('intel_audits'); 
+            } catch(e) {}
+        }
+
+        try {
+            let encoded = localStorage.getItem('intel_audits_secure');
+            if(!encoded) return [];
+            let decoded = decodeURIComponent(escape(atob(encoded)));
+            return JSON.parse(decoded);
+        } catch(e) { return []; }
+    }
+
+    function saveSecureAudits(auditsArray) {
+        try {
+            let jsonString = JSON.stringify(auditsArray);
+            let encoded = btoa(unescape(encodeURIComponent(jsonString)));
+            localStorage.setItem('intel_audits_secure', encoded);
+        } catch(e) {}
+    }
+
+    function updateCumulativeScore() {
+        let audits = getSecureAudits();
+        const avgGauge = document.getElementById('g-avg');
+        const countLabel = document.getElementById('avg-count');
+
+        if(audits.length === 0) {
+            avgGauge.innerText = "-";
+            countLabel.innerText = "0 ביקורות";
+            return;
+        }
+
+        let totalScore = 0;
+        let validAuditsCount = 0;
+
+        audits.forEach(a => {
+            let pctNum = parseInt(a.pct.replace('%', ''));
+            if(!isNaN(pctNum)) {
+                totalScore += pctNum;
+                validAuditsCount++;
+            }
+        });
+
+        if(validAuditsCount > 0) {
+            let avg = Math.round(totalScore / validAuditsCount);
+            avgGauge.innerText = `${avg}%`;
+            countLabel.innerText = `${validAuditsCount} ביקורות`;
+            
+            if (avg >= 85) { avgGauge.style.borderColor = "var(--g)"; avgGauge.style.color = "var(--g)"; }
+            else if(avg >= 70) { avgGauge.style.borderColor = "var(--y)"; avgGauge.style.color = "var(--y)"; }
+            else { avgGauge.style.borderColor = "var(--r)"; avgGauge.style.color = "var(--r)"; }
+        }
+    }
+
+    function startNewAudit() {
+        document.getElementById('startup_menu').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        
+        document.getElementById('audit_id').value = ""; 
+        document.getElementById('form_selector').value = "";
+        document.getElementById('questions_area').innerHTML = `<div style="text-align:center; padding:40px; color:#7f8c8d; border: 2px dashed #ccc; border-radius: 10px;">👆 יש לבחור טופס ביקורת מהרשימה.</div>`;
+        document.getElementById('summary_card').style.display = 'none';
+        
+        document.getElementById('time_start').value = new Date().toTimeString().slice(0,5);
+        document.getElementById('time_end').value = "";
+        document.getElementById('g-curr').innerText = "0%";
+        document.getElementById('g-status').innerText = "ממתין";
+        userScores = {};
+    }
+
+    function showHistoryMenu() {
+        document.getElementById('startup_menu').style.display = 'none';
+        document.getElementById('history_menu').style.display = 'block';
+        
+        const listEl = document.getElementById('history_list');
+        let audits = getSecureAudits();
+        
+        if(audits.length === 0) {
+            listEl.innerHTML = '<p style="text-align:center; color:#666; padding: 20px;">לא נמצאו ביקורות קודמות במכשיר זה.</p>';
+            return;
+        }
+
+        let html = '';
+        audits.forEach(a => {
+            html += `
+            <div class="history-item">
+                <div style="text-align: right;">
+                    <strong>${a.formTitle}</strong><br>
+                    <span style="font-size:12px; color:#666;">תאריך: ${a.date} | ${a.startTime}-${a.endTime} | מבקר/ת: ${a.inspName || 'ללא שם'}</span><br>
+                    <span style="font-size:13px; color:var(--p); font-weight:bold;">ציון: ${a.pct}</span>
+                </div>
+                <button class="btn btn-primary" style="margin-top:0; padding: 10px; font-size: 14px; border-radius: 6px; width: auto;" onclick="loadAudit('${a.id}')">פתח לעריכה</button>
+            </div>
+            `;
+        });
+        listEl.innerHTML = html;
+    }
+
+    function backToStartup() {
+        document.getElementById('history_menu').style.display = 'none';
+        document.getElementById('startup_menu').style.display = 'block';
+    }
+
+    function loadAudit(auditId) {
+        let audits = getSecureAudits();
+        let audit = audits.find(a => a.id === auditId);
+        if(!audit) return;
+
+        document.getElementById('audit_id').value = audit.id;
+        document.getElementById('form_selector').value = audit.formId;
+        document.getElementById('insp_name').value = audit.inspName || "";
+        
+        loadForm(); 
+        
+        document.getElementById('time_start').value = audit.startTime;
+        document.getElementById('time_end').value = audit.endTime;
+        document.getElementById('gen_note').value = audit.genNote || "";
+
+        userScores = audit.scores;
+        for(let key in userScores) {
+            if(userScores[key] !== undefined) {
+                const item = document.getElementById(`item_${key}`);
+                if(item) {
+                    const btns = item.querySelectorAll('.score-btn');
+                    btns.forEach(b => b.classList.remove('active'));
+                    
+                    let val = userScores[key];
+                    if(val === 1) { btns[0].classList.add('active'); item.style.borderRightColor = "var(--g)"; }
+                    else if(val === 0.5) { btns[1].classList.add('active'); item.style.borderRightColor = "var(--y)"; }
+                    else if(val === 0) { btns[2].classList.add('active'); item.style.borderRightColor = "var(--r)"; }
+                    else if(val === -1) { btns[3].classList.add('active'); item.style.borderRightColor = "var(--na)"; }
+                }
+            }
+        }
+
+        for(let key in audit.notes) {
+            if(document.getElementById(`note_${key}`)) {
+                document.getElementById(`note_${key}`).value = audit.notes[key];
+            }
+        }
+        for(let key in audit.images) {
+            const imgEl = document.getElementById(`thumb_${key}`);
+            if(imgEl && audit.images[key]) {
+                imgEl.src = audit.images[key];
+                imgEl.style.display = 'block';
+            }
+        }
+        
+        calcScore();
+        
+        document.getElementById('history_menu').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+    }
+
+    function saveCurrentAuditData() {
+        if(!currentFormId) return;
+        
+        const auditId = document.getElementById('audit_id').value || Date.now().toString();
+        document.getElementById('audit_id').value = auditId;
+
+        let notes = {};
+        let images = {};
+        
+        formsDB[currentFormId].schema.forEach((sec, sIdx) => {
+            sec.qs.forEach((q, qIdx) => {
+                const qId = `q_${sIdx}_${qIdx}`;
+                const noteVal = document.getElementById(`note_${qId}`);
+                if(noteVal && noteVal.value) notes[qId] = noteVal.value;
+                
+                const imgEl = document.getElementById(`thumb_${qId}`);
+                if(imgEl && imgEl.style.display === 'block') images[qId] = imgEl.src;
+            });
+        });
+
+        const now = new Date();
+        const auditData = {
+            id: auditId,
+            formId: currentFormId,
+            formTitle: formsDB[currentFormId].title,
+            date: now.toLocaleDateString(),
+            startTime: document.getElementById('time_start').value,
+            endTime: document.getElementById('time_end').value || now.toTimeString().slice(0,5),
+            inspName: document.getElementById('insp_name').value,
+            scores: userScores,
+            notes: notes,
+            images: images,
+            genNote: document.getElementById('gen_note').value,
+            pct: document.getElementById('g-curr').innerText
+        };
+
+        let audits = getSecureAudits();
+        const existingIdx = audits.findIndex(a => a.id === auditId);
+        
+        if(existingIdx >= 0) audits[existingIdx] = auditData;
+        else audits.unshift(auditData);
+
+        if(audits.length > 50) audits = audits.slice(0, 50);
+
+        saveSecureAudits(audits);
+        updateCumulativeScore(); 
+    }
+
+    function loadForm() {
+        currentFormId = document.getElementById('form_selector').value;
+        const area = document.getElementById('questions_area');
+        userScores = {}; 
+        document.getElementById('g-curr').innerText = "0%";
+        document.getElementById('g-status').innerText = "ממתין";
+        
+        if(!currentFormId || !formsDB[currentFormId]) {
+            area.innerHTML = `<div style="text-align:center; padding:40px; color:#7f8c8d; border: 2px dashed #ccc; border-radius: 10px;">👆 יש לבחור טופס ביקורת מהרשימה.</div>`;
+            document.getElementById('summary_card').style.display = 'none';
+            return;
+        }
+
+        let html = "";
+        formsDB[currentFormId].schema.forEach((sec, sIdx) => {
+            html += `<div class="cat-title">${sec.cat}</div>`;
+            sec.qs.forEach((q, qIdx) => {
+                const qId = `q_${sIdx}_${qIdx}`;
+                html += `
+                <div class="audit-item" id="item_${qId}">
+                    <div class="question-text">${q}</div>
+                    <div class="score-row">
+                        <button class="score-btn btn-pass" onclick="setScore('${qId}', 1, this)">✅ תקין</button>
+                        <button class="score-btn btn-part" onclick="setScore('${qId}', 0.5, this)">⚠️ חלקי</button>
+                        <button class="score-btn btn-fail" onclick="setScore('${qId}', 0, this)">❌ לא תקין</button>
+                        <button class="score-btn btn-na" onclick="setScore('${qId}', -1, this)">➖ N/A</button>
+                    </div>
+                    <div class="extras-row">
+                        <input type="text" class="note-input" id="note_${qId}" placeholder="הערת מבקר...">
+                        <label class="cam-btn" title="צלם תמונה">📷<input type="file" id="img_${qId}" accept="image/*" capture="environment" style="display:none" onchange="previewImg(this, '${qId}')"></label>
+                    </div>
+                    <img id="thumb_${qId}" class="thumb-preview" src="" alt="תצוגה מקדימה">
+                </div>`;
+            });
+        });
+
+        area.innerHTML = html;
+        document.getElementById('summary_card').style.display = 'block';
+    }
+
+    function previewImg(input, qId) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById(`thumb_${qId}`);
+                img.src = e.target.result;
+                img.style.display = 'block';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function setScore(qId, val, btnEl) {
+        userScores[qId] = val;
+        const row = btnEl.parentElement;
+        row.querySelectorAll('.score-btn').forEach(b => b.classList.remove('active'));
+        btnEl.classList.add('active');
+        
+        const item = document.getElementById(`item_${qId}`);
+        if(val === 1) item.style.borderRightColor = "var(--g)";
+        else if(val === 0.5) item.style.borderRightColor = "var(--y)";
+        else if(val === 0) item.style.borderRightColor = "var(--r)";
+        else item.style.borderRightColor = "var(--na)";
+        calcScore();
+    }
+
+    function calcScore() {
+        let totalQs = 0, earned = 0;
+        for (const key in userScores) {
+            if(userScores[key] !== -1 && userScores[key] !== undefined) { 
+                totalQs++; 
+                earned += userScores[key]; 
+            }
+        }
+        const gauge = document.getElementById('g-curr');
+        const status = document.getElementById('g-status');
+        if(totalQs === 0) { gauge.innerText = "0%"; return; }
+
+        const pct = Math.round((earned / totalQs) * 100);
+        gauge.innerText = `${pct}%`;
+        
+        if (pct >= 85) { gauge.style.borderColor = "var(--g)"; gauge.style.color = "var(--g)"; status.innerText = "עובר ✅"; status.style.color = "var(--g)"; }
+        else if(pct >= 70) { gauge.style.borderColor = "var(--y)"; gauge.style.color = "var(--y)"; status.innerText = "טעון שיפור ⚠️"; status.style.color = "var(--y)"; }
+        else { gauge.style.borderColor = "var(--r)"; gauge.style.color = "var(--r)"; status.innerText = "נכשל ❌"; status.style.color = "var(--r)"; }
+    }
+
+    function buildPDFHTML() {
+        const formTitle = formsDB[currentFormId].title;
+        const pct = document.getElementById('g-curr').innerText;
+        const status = document.getElementById('g-status').innerText;
+        const now = new Date();
+        const startTime = document.getElementById('time_start').value;
+        let endTime = document.getElementById('time_end').value || now.toTimeString().slice(0,5);
+
+        let audits = getSecureAudits();
+        let currentAuditId = document.getElementById('audit_id').value;
+        let previousAudit = audits.find(a => a.formId === currentFormId && a.id !== currentAuditId);
+        
+        let comparisonHtml = '';
+        if (previousAudit) {
+            comparisonHtml = `
+            <div style="background: #e8f4f8; padding: 10px; border-radius: 6px; display: inline-block; border: 1px solid #bce8f1; margin-bottom: 15px;">
+                <span style="font-size: 16px; font-weight: bold; color: #333;">📉 ציון ביקורת קודמת: </span>
+                <span style="font-weight:bold; color:#0071c5; font-size: 18px;">${previousAudit.pct}</span>
+            </div>`;
+        } else {
+            comparisonHtml = `
+            <div style="background: #e8f4f8; padding: 10px; border-radius: 6px; display: inline-block; border: 1px solid #bce8f1; margin-bottom: 15px;">
+                <span style="font-size: 16px; font-weight: bold; color: #333;">📉 ציון ביקורת קודמת: </span>
+                <span style="font-weight:bold; color:#7f8c8d; font-size: 16px;">לא קיים דוח קודם להשוואה</span>
+            </div>`;
+        }
+
+        // מבנה פשוט ונקי לחלוטין. רוחב 800 נשלט מבחוץ.
+        let html = `
+        <div style="direction: rtl; text-align: right; font-family: Arial, sans-serif; color: black;">
+            <div style="text-align:center; margin-bottom: 20px; border-bottom: 2px solid #0071c5; padding-bottom: 15px;">
+                <h1 style="color: #0071c5; margin-bottom: 5px; font-size: 24px;">דוח סיכום ביקורת איכות - אינטל חיפה</h1>
+                <h2 style="margin-top: 0; color: #333; font-size: 20px;">${formTitle}</h2>
+                <p style="font-size: 16px; color: #555;">
+                    <strong>מבקר/ת:</strong> ${document.getElementById('insp_name').value || "לא צוין"} | 
+                    <strong>תאריך:</strong> ${now.toLocaleDateString()} | 
+                    <strong>שעות:</strong> ${startTime} - ${endTime}
+                </p>
+                <div style="margin: 15px 0;">
+                    <span style="background-color: ${pct === '100%' || status.includes('עובר') ? '#27ae60' : (status.includes('שיפור') ? '#f39c12' : '#e74c3c')}; color: white; display: inline-block; padding: 10px 20px; border-radius: 8px; font-size: 18px; font-weight: bold;">ציון נוכחי: ${pct} (${status})</span>
+                </div>
+                ${comparisonHtml}
+                ${document.getElementById('gen_note').value ? `<div style="margin-top: 15px; background: #fff3cd; padding: 15px; border-radius: 5px; text-align: right; border: 1px solid #ffeeba;"><strong>הערות מנהלים לסיכום:</strong><br>${document.getElementById('gen_note').value}</div>` : ''}
+            </div>`;
+
+        formsDB[currentFormId].schema.forEach((sec, sIdx) => {
+            html += `
+            <h4 style="background-color: #0071c5; color: white; padding: 10px; margin: 20px 0 0 0; border-radius: 5px 5px 0 0; font-size: 16px;">${sec.cat}</h4>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: right; border: 1px solid #ddd; font-size: 14px;">
+                <thead>
+                    <tr style="background-color: #f4f6f7; color: #333;">
+                        <th style="padding: 10px; width: 40%; border: 1px solid #ddd;">הנושא הנבדק (סעיף)</th>
+                        <th style="padding: 10px; width: 15%; text-align: center; border: 1px solid #ddd;">ציון / סטטוס</th>
+                        <th style="padding: 10px; width: 30%; border: 1px solid #ddd;">הערת מבקר</th>
+                        <th style="padding: 10px; width: 15%; text-align: center; border: 1px solid #ddd;">תמונה</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            
+            sec.qs.forEach((q, qIdx) => {
+                const qId = `q_${sIdx}_${qIdx}`;
+                const score = userScores[qId];
+                const note = document.getElementById(`note_${qId}`).value;
+                const imgEl = document.getElementById(`thumb_${qId}`);
+                const imgSrc = imgEl && imgEl.style.display === 'block' ? imgEl.src : null;
+                
+                let scoreText = "לא סומן";
+                let scoreColor = "#95a5a6"; 
+                if(score === 1) { scoreText = "תקין (100%)"; scoreColor = "#27ae60"; }
+                if(score === 0.5) { scoreText = "חלקי (50%)"; scoreColor = "#d35400"; }
+                if(score === 0) { scoreText = "לא תקין (0%)"; scoreColor = "#c0392b"; }
+                if(score === -1) { scoreText = "N/A"; scoreColor = "#7f8c8d"; }
+
+                html += `<tr style="page-break-inside: avoid;">
+                    <td style="padding: 10px; border: 1px solid #ddd; vertical-align: middle;">${q}</td>
+                    <td style="padding: 10px; text-align:center; color: ${scoreColor}; font-weight:bold; border: 1px solid #ddd; vertical-align: middle;">${scoreText}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; color: #555; vertical-align: middle;">${note || '-'}</td>
+                    <td style="padding: 10px; text-align:center; border: 1px solid #ddd; vertical-align: middle;">
+                        ${imgSrc ? `<img src="${imgSrc}" style="max-height: 80px; max-width: 80px; border-radius: 4px; border: 1px solid #ccc; object-fit: cover;" />` : '-'}
+                    </td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+        });
+        
+        html += `</div>`; 
+        document.getElementById('print-area').innerHTML = html;
+    }
+
+    function showSummaryModal() {
+        if(!currentFormId) return alert("אנא בחר טופס!");
+        saveCurrentAuditData();
+
+        const formTitle = formsDB[currentFormId].title;
+        const pct = document.getElementById('g-curr').innerText;
+        const status = document.getElementById('g-status').innerText;
+        
+        let report = `*דוח ביקורת - ${formTitle}*\n`;
+        report += `*ציון ביקורת: ${pct}* (${status})\n------------------------\n\n*פירוט ממצאים לטיפול:*\n`;
+        
+        let hasIssues = false;
+        
+        formsDB[currentFormId].schema.forEach((sec, sIdx) => {
+            sec.qs.forEach((q, qIdx) => {
+                const qId = `q_${sIdx}_${qIdx}`;
+                const score = userScores[qId];
+                const note = document.getElementById(`note_${qId}`).value;
+                const imgEl = document.getElementById(`thumb_${qId}`);
+                const hasImg = imgEl && imgEl.style.display === 'block';
+
+                if(score !== undefined && score !== 1) {
+                    hasIssues = true;
+                    let icon = score === 0 ? "❌ לא תקין" : (score === 0.5 ? "⚠️ חלקי" : "➖ N/A");
+                    report += `${icon}: ${q}\n`;
+                    if(note) report += `📝 ${note}\n`;
+                    if(hasImg) report += `📷 [צורפה תמונה - יש לשלוח ידנית]\n`;
+                    report += `\n`;
+                }
+            });
+        });
+
+        if(!hasIssues) report += `✅ לא נמצאו ליקויים בסיור זה.\n`;
+        let genNote = document.getElementById('gen_note').value;
+        if(genNote) report += `\n*הערות כלליות:* ${genNote}\n`;
+        
+        document.getElementById('sum-text').innerText = report;
+        document.getElementById('modal').style.display = 'block';
+    }
+
+    function closeModal() { 
+        document.getElementById('modal').style.display = 'none'; 
+    }
+
+    function openPreview() {
+        buildPDFHTML(); 
+        document.getElementById('preview-content').innerHTML = document.getElementById('print-area').innerHTML;
+        document.getElementById('preview-modal').style.display = 'block';
+    }
+
+    function closePreview() {
+        document.getElementById('preview-modal').style.display = 'none';
+    }
+
+    function processDirectPDFShareFromPreview() {
+        const btn = document.getElementById('btn-preview-share');
+        btn.innerText = "⏳ מכין PDF...";
+        btn.style.background = "#f39c12";
+        
+        setTimeout(() => {
+            processDirectPDFShare();
+            setTimeout(() => {
+                btn.innerText = "📤 אישור ושליחה PDF";
+                btn.style.background = "#e74c3c";
+                closePreview(); 
+            }, 2000);
+        }, 100);
+    }
+
+    function processDirectPDFShare() {
+        buildPDFHTML();
+        const element = document.getElementById('print-area');
+        
+        const appContainer = document.getElementById('app');
+        const previewModal = document.getElementById('preview-modal');
+        const modal = document.getElementById('modal');
+        const loginScreen = document.getElementById('login');
+        const startupMenu = document.getElementById('startup_menu');
+        const historyMenu = document.getElementById('history_menu');
+        
+        const wasPreviewOpen = previewModal.style.display === 'block';
+        const wasModalOpen = modal.style.display === 'block';
+        
+        // 1. מעלימים את כל האפליקציה לחלוטין
+        appContainer.style.display = 'none';
+        previewModal.style.display = 'none';
+        modal.style.display = 'none';
+        loginScreen.style.display = 'none';
+        startupMenu.style.display = 'none';
+        historyMenu.style.display = 'none';
+        
+        // 2. מציגים רק את אזור ההדפסה
+        element.style.display = 'block';
+        window.scrollTo(0, 0);
+
+        // 3. התיקון הקריטי: מאלצים את הדפדפן להתרחב ל-800 פיקסלים
+        // ככה האייפון מבצע "זום אאוט" טבעי והכל נכנס למסך בלי שום חיתוך.
+        const viewportMeta = document.querySelector('meta[name="viewport"]');
+        const originalViewport = viewportMeta.getAttribute('content');
+        viewportMeta.setAttribute('content', 'width=800');
+
+        const opt = {
+            margin:       10,
+            filename:     `דוח_ביקורת_${currentFormId}_${new Date().toLocaleDateString().replace(/\./g,'-')}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true }, 
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // 4. ממתינים שנייה אחת כדי שהאייפון יספיק לעשות את הזום ולצייר את המסך לפני הצילום
+        setTimeout(() => {
+            html2pdf().set(opt).from(element).output('blob').then(function (pdfBlob) {
+                
+                // 5. מחזירים את המסך לזום של הטלפון הרגיל
+                viewportMeta.setAttribute('content', originalViewport);
+                
+                // 6. מחזירים את האפליקציה למצב הקודם
+                element.style.display = 'none';
+                appContainer.style.display = 'block';
+                if (wasPreviewOpen) previewModal.style.display = 'block';
+                if (wasModalOpen && !wasPreviewOpen) modal.style.display = 'block';
+
+                const file = new File([pdfBlob], opt.filename, { type: 'application/pdf' });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: 'דוח ביקורת',
+                        text: 'מצורף דוח ביקורת איכות למעקב.'
+                    }).catch(() => {});
+                } else {
+                    const url = window.URL.createObjectURL(pdfBlob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = opt.filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    alert("המכשיר לא תומך בשיתוף ישיר. הקובץ הורד למכשירך - תוכל לשתף אותו ידנית.");
+                }
+            });
+        }, 1000); 
+    }
+</script>
+</body>
+</html>
