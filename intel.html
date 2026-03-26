@@ -3,19 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>מערכת בקרת איכות - אינטל חיפה (ניר עציון)</title>
+    <title>מערכת בקרת איכות - אינטל חיפה</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        :root { --p: #0071c5; --s: #00aeef; --g: #27ae60; --y: #f39c12; --r: #e74c3c; --na: #95a5a6; --bg: #f4f6f7; }
+        :root { --p: #0071c5; --g: #27ae60; --y: #f39c12; --r: #e74c3c; --na: #95a5a6; --bg: #f4f6f7; }
         body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 0; color: #333; }
         
-        /* עיצוב הממשק בטלפון */
         .dashboard { position: sticky; top: 0; z-index: 1000; background: white; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-bottom: 3px solid var(--p); }
-        .dash-top { display: flex; justify-content: space-between; margin-bottom: 12px; }
-        .gauge-container { text-align: center; width: 32%; }
-        .gauge-label { font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #666; white-space: nowrap; }
-        .gauge-bg { width: 70px; height: 70px; border-radius: 50%; border: 6px solid #eee; margin: auto; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; color: var(--p); }
+        .dash-top { display: flex; justify-content: space-between; align-items: center; }
+        .gauge-bg { width: 75px; height: 75px; border-radius: 50%; border: 6px solid #eee; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; color: var(--p); }
         
         .container { padding: 15px; max-width: 600px; margin: auto; }
         .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -23,82 +20,98 @@
         .cat-title { background: var(--p); color: white; padding: 12px; border-radius: 6px; margin: 25px 0 10px; font-weight: bold; text-align: center; }
         .audit-item { background: white; padding: 12px; border-radius: 10px; margin-bottom: 12px; border-right: 5px solid #ddd; }
         
-        .score-row { display: flex; gap: 5px; margin-bottom: 8px; }
-        .score-btn { flex: 1; padding: 10px 5px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center; }
+        .score-row { display: flex; gap: 5px; margin-top: 10px; }
+        .score-btn { flex: 1; padding: 12px 5px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; }
         .btn-pass.active { background: var(--g); color: white; border-color: var(--g); }
         .btn-part.active { background: var(--y); color: white; border-color: var(--y); }
         .btn-fail.active { background: var(--r); color: white; border-color: var(--r); }
         .btn-na.active { background: var(--na); color: white; border-color: var(--na); }
 
-        .btn { width: 100%; padding: 16px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; text-align: center; }
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .btn-primary { background: var(--p); color: white; }
         
-        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto; padding: 15px; box-sizing: border-box; }
-        .modal-body { background: white; padding: 20px; border-radius: 12px; max-width: 600px; margin: auto; margin-top: 20px;}
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; padding: 15px; box-sizing: border-box; }
+        .modal-body { background: white; padding: 20px; border-radius: 12px; max-width: 500px; margin: 50px auto; }
 
-        /* --- אזור ההדפסה - התיקון הקריטי לאייפון --- */
-        #print-area-wrapper { 
-            position: absolute; left: -9999px; top: 0; /* מחוץ למסך אבל קיים */
-            width: 800px; background: white; direction: ltr !important; /* אמא LTR */
-        }
-        #print-area { 
-            width: 800px; padding: 30px; direction: rtl !important; /* תוכן RTL */
-            background: white; color: black;
-        }
+        /* אזור ההדפסה - מותאם למובייל בלי טבלאות רחבות */
+        #pdf-content { width: 700px; padding: 30px; background: white; color: black; display: none; }
+        .pdf-section { border-bottom: 2px solid var(--p); margin-bottom: 20px; padding-bottom: 10px; }
+        .pdf-row { margin-bottom: 15px; padding: 10px; border: 1px solid #eee; border-radius: 5px; page-break-inside: avoid; }
     </style>
 </head>
 <body>
 
-<div id="app">
+<div id="app-ui">
     <div class="dashboard">
         <div class="dash-top">
-            <div class="gauge-container"><div class="gauge-label">ציון</div><div id="g-curr" class="gauge-bg">0%</div></div>
-            <div class="gauge-container"><div class="gauge-label">סטטוס</div><div id="g-status" class="gauge-bg" style="font-size:14px">ממתין</div></div>
+            <div><label style="font-size:12px; font-weight:bold; color:#666;">ציון נוכחי</label><div id="g-curr" class="gauge-bg">0%</div></div>
+            <div style="text-align:center"><label style="font-size:12px; font-weight:bold; color:#666;">סטטוס</label><div id="g-status" style="font-weight:bold; color:var(--p); margin-top:10px;">ממתין</div></div>
+            <input type="text" id="insp_name" placeholder="שם המבקר/ת" style="width:120px; padding:8px; border:1px solid #ccc; border-radius:5px;">
         </div>
-        <input type="text" id="insp_name" placeholder="שם המבקר/ת" style="width:90%; padding:10px; margin:10px auto; display:block; border-radius:6px; border:1px solid #ccc;">
     </div>
 
     <div class="container">
-        <select id="form_selector" onchange="loadForm()" style="width:100%; padding:12px; border-radius:8px; border:2px solid var(--p); font-weight:bold;">
-            <option value="">-- בחר טופס --</option>
-            <option value="clean_ninedine">סיור ניקיון - Nine Dine</option>
-            <option value="food_ninedine">בטיחות מזון - Nine Dine</option>
-            <option value="expiry_marlog">פגי תוקף וניקיון - מרלו"ג</option>
-        </select>
+        <div class="card">
+            <label style="font-weight:bold; color:var(--p)">בחר טופס ביקורת:</label>
+            <select id="form_selector" onchange="loadForm()" style="width:100%; padding:12px; border-radius:8px; margin-top:10px; font-weight:bold; border:2px solid var(--p);">
+                <option value="">-- בחר מהרשימה --</option>
+                <optgroup label="🧹 ניקיון">
+                    <option value="clean_ninedine">סיור ניקיון - Nine Dine</option>
+                    <option value="clean_bento">סיור ניקיון - Bento</option>
+                    <option value="clean_nona">סיור ניקיון - Nona</option>
+                </optgroup>
+                <optgroup label="⚠️ בטיחות ופגי תוקף">
+                    <option value="food_ninedine">בטיחות מזון - Nine Dine</option>
+                    <option value="expiry_marlog">פגי תוקף וניקיון - מרלו"ג</option>
+                </optgroup>
+            </select>
+        </div>
 
-        <div id="questions_area" style="margin-top:20px"></div>
+        <div id="questions_area"></div>
         
         <div id="summary_card" style="display:none" class="card">
-            <textarea id="gen_note" rows="3" placeholder="הערות לסיכום..." style="width:100%; border-radius:8px; padding:10px;"></textarea>
-            <button class="btn btn-primary" onclick="generateReport()">💾 סיום ושליחת דוח</button>
+            <label style="font-weight:bold;">הערות לסיכום:</label>
+            <textarea id="gen_note" rows="3" style="width:100%; margin-top:10px; padding:10px; border-radius:8px; border:1px solid #ccc;"></textarea>
+            <button class="btn btn-primary" onclick="openModal()">💾 סיים והפק דוח PDF</button>
         </div>
     </div>
 </div>
 
 <div id="modal">
     <div class="modal-body">
-        <h2 style="color:var(--p)">דוח מוכן!</h2>
-        <div id="sum-text" style="background:#f9f9f9; padding:10px; margin-bottom:15px; white-space:pre-wrap; font-size:14px;"></div>
-        <button class="btn btn-primary" onclick="sharePDF()">📤 שליחת דוח PDF מלא</button>
-        <button class="btn" style="background:#666; color:white" onclick="document.getElementById('modal').style.display='none'">חזרה</button>
+        <h2 style="margin-top:0; color:var(--p)">📋 הדוח מוכן</h2>
+        <p>לחץ על הכפתור מטה כדי לשתף את הדוח בוואטסאפ או לשמור כקובץ.</p>
+        <button class="btn btn-primary" onclick="generatePDF()">📤 שלח דוח PDF מלא</button>
+        <button class="btn" style="background:#666; color:white" onclick="document.getElementById('modal').style.display='none'">חזרה לעריכה</button>
     </div>
 </div>
 
-<div id="print-area-wrapper">
-    <div id="print-area"></div>
+<div id="pdf-content">
+    <div id="pdf-header" style="text-align:center; border-bottom:4px solid #0071c5; padding-bottom:20px; margin-bottom:20px;">
+        <h1 style="color:#0071c5; margin:0;">דוח ביקורת איכות - אינטל חיפה</h1>
+        <h2 id="pdf-title" style="margin:10px 0; color:#333;"></h2>
+        <div style="font-size:16px; margin-top:10px;">
+            <span>מבקר/ת: <strong id="pdf-insp"></strong></span> | 
+            <span>תאריך: <strong id="pdf-date"></strong></span>
+        </div>
+        <div id="pdf-score-box" style="margin-top:20px; display:inline-block; padding:15px 30px; border-radius:10px; color:white; font-size:22px; font-weight:bold;"></div>
+    </div>
+    <div id="pdf-body"></div>
 </div>
 
 <script>
     const formsDB = {
         "clean_ninedine": { title: "סיור ניקיון - Nine Dine", schema: [
-            { cat: "רחבת כניסה", qs: ["האם איזור הקופות נקי", "עמדת הצטיידות נקייה", "עמדת שטיפת ידיים נקייה"] },
-            { cat: "עמדות הגשה", qs: ["פלנצ'ות נקיות", "מנדפים נקיים", "דלפקים נקיים"] }
+            { cat: "רחבת כניסה", qs: ["האם איזור הקופות נקי", "עמדת הצטיידות נקייה", "עמדת שטיפת ידיים נקייה", "כניסה לחדר אוכל נקי", "סבון ונייר תקינים"] },
+            { cat: "עמדות הגשה", qs: ["פלנצ'ות נקיות", "מנדפים נקיים", "דלפקי הגשה נקיים", "פסים קרים וחמים נקיים"] }
         ]},
         "food_ninedine": { title: "בטיחות מזון - Nine Dine", schema: [
-            { cat: "קירור", qs: ["הפרדה בין גולמי למוכן?", "מזון מכוסה ומתועד?", "אחסון ביצים תקין?"] }
+            { cat: "מערכות קירור", qs: ["הפרדה בין גולמי למוכן?", "מזון מכוסה/עטוף?", "מדבקות תאריך פתיחה?", "אחסון ביצים תקין?"] },
+            { cat: "תהליכי ייצור", qs: ["עבודה עפ קוד צבעים?", "ברז וכיור תקינים?", "מניעת זיהום צולב?", "תיעוד הפשרות/בישול?"] }
         ]},
-        "expiry_marlog": { title: "פגי תוקף - מרלו"ג", schema: [
-            { cat: "מחסן יבש", qs: ["סדר וניקיון", "הגבהה מהרצפה", "בדיקת פגי תוקף (FIFO)"] }
+        "expiry_marlog": { title: "פגי תוקף וניקיון - מרלו"ג", schema: [
+            { cat: "מקררים ומקפיאים", qs: ["מקרר ירקות מחוטאים - פגי תוקף?", "מקרר ירקות גולמי - פגי תוקף?", "מקפיאים - נקי? פגי תוקף?"] },
+            { cat: "מחסן יבש", qs: ["מסודר ומוגבה?", "בדיקת FIFO?", "פגי תוקף במוצרים יבשים?"] }
         ]}
     };
 
@@ -108,24 +121,28 @@
     function loadForm() {
         currentFormId = document.getElementById('form_selector').value;
         if (!currentFormId) return;
+        userScores = {};
         let html = "";
         formsDB[currentFormId].schema.forEach((sec, sIdx) => {
             html += `<div class="cat-title">${sec.cat}</div>`;
             sec.qs.forEach((q, qIdx) => {
                 const qId = `q_${sIdx}_${qIdx}`;
-                html += `<div class="audit-item" id="item_${qId}">
-                    <div style="font-weight:bold; margin-bottom:8px">${q}</div>
+                html += `
+                <div class="audit-item" id="item_${qId}">
+                    <div style="font-weight:bold;">${q}</div>
                     <div class="score-row">
                         <button class="score-btn btn-pass" onclick="setScore('${qId}', 1, this)">✅ תקין</button>
+                        <button class="score-btn btn-part" onclick="setScore('${qId}', 0.5, this)">⚠️ חלקי</button>
                         <button class="score-btn btn-fail" onclick="setScore('${qId}', 0, this)">❌ ליקוי</button>
                         <button class="score-btn btn-na" onclick="setScore('${qId}', -1, this)">➖ N/A</button>
                     </div>
-                    <input type="text" id="note_${qId}" placeholder="הערה..." style="width:100%; padding:8px; margin-top:5px; border:1px solid #eee; border-radius:5px;">
+                    <input type="text" id="note_${qId}" placeholder="הוסף הערה..." style="width:100%; padding:8px; margin-top:8px; border:1px solid #eee; border-radius:5px;">
                 </div>`;
             });
         });
         document.getElementById('questions_area').innerHTML = html;
         document.getElementById('summary_card').style.display = 'block';
+        calcScore();
     }
 
     function setScore(qId, val, btn) {
@@ -137,72 +154,76 @@
 
     function calcScore() {
         let count = 0, sum = 0;
-        for (let k in userScores) { if(userScores[k] !== -1) { count++; sum += userScores[k]; } }
+        for (let k in userScores) {
+            if(userScores[k] !== -1) { count++; sum += userScores[k]; }
+        }
         let pct = count ? Math.round((sum/count)*100) : 0;
-        document.getElementById('g-curr').innerText = pct + "%";
-        document.getElementById('g-status').innerText = pct >= 85 ? "עובר ✅" : "נכשל ❌";
+        const g = document.getElementById('g-curr');
+        g.innerText = pct + "%";
+        if(pct >= 85) { g.style.borderColor = "var(--g)"; document.getElementById('g-status').innerText = "עובר ✅"; }
+        else if(pct >= 70) { g.style.borderColor = "var(--y)"; document.getElementById('g-status').innerText = "שיפור ⚠️"; }
+        else { g.style.borderColor = "var(--r)"; document.getElementById('g-status').innerText = "נכשל ❌"; }
     }
 
-    function buildPDFHTML() {
-        const form = formsDB[currentFormId];
-        let html = `<div style="text-align:center; border-bottom:3px solid #0071c5; padding-bottom:10px;">
-            <h1 style="color:#0071c5">${form.title}</h1>
-            <p>מבקר: ${document.getElementById('insp_name').value} | תאריך: ${new Date().toLocaleDateString('he-IL')}</p>
-            <h2 style="background:#0071c5; color:white; display:inline-block; padding:10px 20px; border-radius:8px;">ציון: ${document.getElementById('g-curr').innerText}</h2>
-        </div>`;
-
-        form.schema.forEach((sec, sIdx) => {
-            html += `<h3 style="background:#eee; padding:8px; margin-top:20px;">${sec.cat}</h3>
-            <table style="width:100%; border-collapse:collapse;">
-                <tr style="background:#f4f4f4">
-                    <th style="border:1px solid #ddd; padding:8px; text-align:right;">סעיף</th>
-                    <th style="border:1px solid #ddd; padding:8px; text-align:center;">סטטוס</th>
-                    <th style="border:1px solid #ddd; padding:8px; text-align:right;">הערה</th>
-                </tr>`;
-            sec.qs.forEach((q, qIdx) => {
-                const qId = `q_${sIdx}_${qIdx}`;
-                const s = userScores[qId];
-                let txt = s===1 ? "תקין" : (s===0 ? "ליקוי" : "N/A");
-                html += `<tr>
-                    <td style="border:1px solid #ddd; padding:8px;">${q}</td>
-                    <td style="border:1px solid #ddd; padding:8px; text-align:center; font-weight:bold; color:${s===1?'green':'red'}">${txt}</td>
-                    <td style="border:1px solid #ddd; padding:8px;">${document.getElementById('note_'+qId).value || ""}</td>
-                </tr>`;
-            });
-            html += `</table>`;
-        });
-        document.getElementById('print-area').innerHTML = html;
-    }
-
-    function generateReport() {
-        buildPDFHTML();
-        document.getElementById('sum-text').innerText = "הדוח מוכן לשיתוף. לחץ על הכפתור מטה להפקת PDF ושליחה.";
+    function openModal() {
         document.getElementById('modal').style.display = 'block';
     }
 
-    function sharePDF() {
-        const element = document.getElementById('print-area');
+    function generatePDF() {
+        const form = formsDB[currentFormId];
+        document.getElementById('pdf-title').innerText = form.title;
+        document.getElementById('pdf-insp').innerText = document.getElementById('insp_name').value || "לא צוין";
+        document.getElementById('pdf-date').innerText = new Date().toLocaleDateString('he-IL');
+        
+        const scorePct = document.getElementById('g-curr').innerText;
+        const scoreBox = document.getElementById('pdf-score-box');
+        scoreBox.innerText = "ציון סופי: " + scorePct;
+        scoreBox.style.backgroundColor = parseInt(scorePct) >= 85 ? "#27ae60" : (parseInt(scorePct) >= 70 ? "#f39c12" : "#e74c3c");
+
+        let bodyHtml = "";
+        form.schema.forEach((sec, sIdx) => {
+            bodyHtml += `<div class="pdf-section"><h3 style="color:#0071c5; margin-bottom:10px;">${sec.cat}</h3>`;
+            sec.qs.forEach((q, qIdx) => {
+                const qId = `q_${sIdx}_${qIdx}`;
+                const val = userScores[qId];
+                if (val !== undefined) {
+                    let statusTxt = val === 1 ? "✅ תקין" : (val === 0.5 ? "⚠️ חלקי" : (val === 0 ? "❌ ליקוי" : "➖ N/A"));
+                    let note = document.getElementById('note_'+qId).value;
+                    bodyHtml += `
+                    <div class="pdf-row">
+                        <div style="font-weight:bold; font-size:16px;">${q}</div>
+                        <div style="margin-top:5px;">סטטוס: <strong>${statusTxt}</strong></div>
+                        ${note ? `<div style="margin-top:5px; font-style:italic; color:#555;">הערה: ${note}</div>` : ''}
+                    </div>`;
+                }
+            });
+            bodyHtml += `</div>`;
+        });
+        
+        const genNote = document.getElementById('gen_note').value;
+        if(genNote) bodyHtml += `<div style="padding:15px; background:#fff3cd; border-radius:8px;"><strong>הערות סיכום:</strong><br>${genNote}</div>`;
+        
+        document.getElementById('pdf-body').innerHTML = bodyHtml;
+        
+        const element = document.getElementById('pdf-content');
+        element.style.display = 'block'; // הצגה זמנית לצילום
+
         const opt = {
             margin: 10,
-            filename: 'audit_report.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { 
-                scale: 2, 
-                useCORS: true, 
-                width: 800, // רוחב קבוע למצלמה
-                windowWidth: 800,
-                x: 0, y: 0,
-                scrollX: 0, scrollY: 0
-            },
+            filename: `ביקורת_${form.title}.pdf`,
+            html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
         html2pdf().set(opt).from(element).output('blob').then(blob => {
-            const file = new File([blob], "Report.pdf", { type: "application/pdf" });
+            element.style.display = 'none';
+            const file = new File([blob], opt.filename, { type: 'application/pdf' });
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 navigator.share({ files: [file], title: 'דוח ביקורת' });
             } else {
-                alert("הקובץ נוצר. במכשיר זה יש להוריד אותו ידנית.");
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = opt.filename; a.click();
             }
         });
     }
