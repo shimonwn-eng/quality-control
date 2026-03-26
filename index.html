@@ -2,45 +2,59 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="robots" content="noindex, nofollow">
+    
     <title>מערכת בקרת איכות - אינטל חיפה</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <style>
-        :root { --p: #0071c5; --bg: #f4f6f7; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; }
-        .header { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-bottom: 4px solid var(--p); margin-bottom: 25px; }
-        h1 { color: var(--p); margin: 0; font-size: 22px; }
-        p { color: #666; font-size: 14px; margin-top: 10px; }
-        .menu-grid { display: grid; grid-template-columns: 1fr; gap: 15px; max-width: 400px; margin: auto; }
-        .menu-btn { 
-            background: white; border: 2px solid #ddd; padding: 20px; border-radius: 12px; 
-            font-size: 18px; font-weight: bold; color: #333; cursor: pointer;
-            display: flex; align-items: center; justify-content: space-between;
-            transition: 0.2s; text-decoration: none;
-        }
-        .menu-btn:active { transform: scale(0.98); background: #f0f8ff; border-color: var(--p); }
-        .icon { font-size: 24px; }
-        .footer { margin-top: 40px; font-size: 12px; color: #999; }
+        :root { --p: #0071c5; --s: #00aeef; --g: #27ae60; --y: #f39c12; --r: #e74c3c; --na: #95a5a6; --bg: #f4f6f7; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 0; color: #333; }
+        
+        /* מסך כניסה */
+        #login { padding: 50px 20px; text-align: center; }
+        .login-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+
+        /* תפריט ראשי */
+        #startup_menu { text-align: center; padding: 50px 20px; }
+
+        /* דאשבורד */
+        .dashboard { position: sticky; top: 0; z-index: 1000; background: white; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-bottom: 3px solid var(--p); }
+        .dash-top { display: flex; justify-content: space-between; margin-bottom: 12px; }
+        .gauge-container { text-align: center; width: 32%; }
+        .gauge-label { font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #666; }
+        .gauge-bg { width: 65px; height: 65px; border-radius: 50%; border: 5px solid #eee; margin: auto; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; color: var(--p); }
+        
+        .container { padding: 15px; max-width: 600px; margin: auto; }
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: var(--p); }
+        select, textarea, input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; }
+
+        .cat-title { background: var(--p); color: white; padding: 12px; border-radius: 6px; margin: 25px 0 10px; font-weight: bold; text-align: center; }
+        .audit-item { background: white; padding: 12px; border-radius: 10px; margin-bottom: 12px; border-right: 5px solid #ddd; }
+        
+        .score-row { display: flex; gap: 5px; margin-bottom: 8px; }
+        .score-btn { flex: 1; padding: 12px 5px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; }
+        .btn-pass.active { background: var(--g); color: white; border-color: var(--g); }
+        .btn-fail.active { background: var(--r); color: white; border-color: var(--r); }
+        .btn-na.active { background: var(--na); color: white; border-color: var(--na); }
+
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .btn-primary { background: var(--p); color: white; }
+        
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto; padding: 15px; }
+        .modal-body { background: white; padding: 20px; border-radius: 12px; max-width: 500px; margin: auto; margin-top: 50px; text-align: center; }
+
+        /* אזור ההדפסה הנסתר - רוחב 800 למניעת חיתוך */
+        #print-area { display: none; width: 800px; padding: 40px; background: white; direction: rtl; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🏢 לוח בקרה - ניהול דוחות</h1>
-        <p>אינטל חיפה | ברוך הבא, בחר דוח לביצוע:</p>
-    </div>
-    <div class="menu-grid">
-        <a href="INTEL_HAIFA.HTML" class="menu-btn">
-            <span>📋 דוח אינטל חיפה</span>
-            <span class="icon">⬅️</span>
-        </a>
-        <a href="shimis.html" class="menu-btn">
-            <span>👨‍🍳 דוח שימיס (Shimis)</span>
-            <span class="icon">⬅️</span>
-        </a>
-        <a href="intel.html" class="menu-btn">
-            <span>📊 דוח אינטל כללי</span>
-            <span class="icon">⬅️</span>
-        </a>
-    </div>
-    <div class="footer">מערכת בקרת איכות מאובטחת v3.0</div>
-</body>
-</html>
+
+<div id="login">
+    <div class="login-card">
+        <h2>🏢 מערכת בקרת איכות</h2>
+        <p>אינטל חיפה - ניר עציון</p>
+        <div style="
