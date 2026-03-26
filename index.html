@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ביקורת איכות - דשבורד חכם</title>
+    <style>
+        :root { --p: #2c3e50; --s: #3498db; --g: #27ae60; --o: #f39c12; --r: #e74c3c; --bg: #f0f4f7; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--p); }
+        
+        /* דשבורד מחוגים מקובע למעלה */
+        .dashboard { 
+            position: sticky; top: 0; z-index: 1000; background: white; 
+            display: flex; justify-content: space-around; padding: 15px 5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-bottom: 2px solid #ddd;
+        }
+        .gauge-container { text-align: center; width: 45%; }
+        .gauge-label { font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #666; }
+        .gauge-bg { width: 80px; height: 80px; border-radius: 50%; border: 6px solid #eee; margin: auto; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; transition: 0.5s; }
+
+        .container { padding: 15px; max-width: 600px; margin: auto; }
+        h1 { font-size: 20px; text-align: center; margin: 15px 0; }
+        
+        /* שדות פתיחה */
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; }
+
+        /* כותרות קטגוריה */
+        .cat-title { color: white; padding: 10px; border-radius: 6px; margin: 20px 0 10px; font-weight: bold; font-size: 15px; }
+        .c1 { background: #34495e; } .c2 { background: #d35400; } .c3 { background: #2980b9; } .c4 { background: #8e44ad; }
+
+        /* פריט בדיקה */
+        .audit-item { background: white; padding: 12px; border-radius: 10px; margin-bottom: 15px; border-right: 5px solid #ddd; }
+        .score-row { display: flex; gap: 10px; align-items: center; }
+        .photo-btn { background: #6c757d; color: white; padding: 10px; border-radius: 6px; text-align: center; flex: 1; font-size: 13px; cursor: pointer; }
+
+        /* כפתורי פעולה */
+        .btn { width: 100%; padding: 18px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-primary { background: var(--s); color: white; }
+        .btn-wa { background: #25D366; color: white; display: block; text-decoration: none; text-align: center; }
+
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto; padding: 15px; box-sizing: border-box; }
+        .modal-body { background: white; padding: 20px; border-radius: 15px; }
+        
+        #login { padding: 50px 20px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div id="login" class="container">
+    <h2>🔐 כניסה למערכת</h2>
+    <input type="password" id="pass" placeholder="קוד גישה (2024)">
+    <button class="btn btn-primary" onclick="checkPass()">כניסה</button>
+</div>
+
+<div id="app" style="display:none;">
+    <div class="dashboard">
+        <div class="gauge-container">
+            <div class="gauge-label">ציון נוכחי</div>
+            <div id="g-curr" class="gauge-bg">0</div>
+        </div>
+        <div class="gauge-container">
+            <div class="gauge-label">ממוצע תחנה</div>
+            <div id="g-hist" class="gauge-bg" style="border-color: #ddd; color: #999;">--</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <label>בחר תחנה:</label>
+            <select id="st_name" onchange="loadHistory()">
+                <option value="">-- בחר תחנה --</option>
+                <option>אינטל חיפה</option>
+                <option>אינטל פ"ת</option>
+                <option>אינטל ירושלים</option>
+                <option>אלביט חיפה</option>
+                <option>KLA מגדל העמק</option>
+                <option>KLA יבנה</option>
+            </select>
+            <label>טלפון מנהל (וואטסאפ):</label>
+            <input type="tel" id="mgr_phone" placeholder="למשל: 0501234567">
+            <label>שם המבקר:</label>
+            <input type="text" id="insp_name" placeholder="השם שלך">
+        </div>
+
+        <div id="questions_area"></div>
+
+        <div class="card">
+            <label>הערה כללית לסיכום:</label>
+            <textarea id="gen_note" rows="3"></textarea>
+        </div>
+
+        <button class="btn btn-primary" onclick="showSummary()">הצג סיכום ושליחה</button>
+    </div>
+</div>
+
+<div id="modal">
+    <div class="modal-body">
+        <h2 style="margin-top:0">📋 סיכום דוח</h2>
+        <div id="sum-text" style="white-space: pre-wrap; font-size: 14px; background: #f9f9f9; padding: 10px; border-radius: 8px;"></div>
+        <button class="btn btn-wa" onclick="sendWA()">שלח בוואטסאפ מנהל 🟢</button>
+        <button class="btn" style="background:#666; color:white;" onclick="closeModal()">חזרה לעריכה</button>
+    </div>
+</div>
+
+<script>
+    const schema = [
+        { t: "🏗️ תשתיות ותחזוקה", c: "c1", qs: ["תקינות ניקוז ומפרידי שומן", "מצב קירות ותקרה", "תאורה מוגנת", "אוורור ונידוף", "הדברה ורישום"] },
+        { t: "🥚 חומרי גלם ואחסון", c: "c2", qs: ["טמפ' קבלה < 5°C", "סימון תאריכים ותוקף", "הפרדה גולמי/מבושל", "מקרר ביצים ייעודי", "אחסון מעל הרצפה"] },
+        { t: "🔥 תהליכי בישול", c: "c3", qs: ["טמפ' ליבה > 70°C", "צינון מהיר (60 ל-10)", "חיטוי ירקות (כלור)", "הפשרה במקרר", "שמירה בחום > 65°C"] },
+        { t: "🧼 היגיינה ובטיחות", c: "c4", qs: ["עמדות שטיפת ידיים", "בגדי עבודה וכיסוי ראש", "קרשים/סכינים לפי צבע", "הצהרות בריאות עובדים", "תקינות פחים ופינוי"] }
+    ];
+
+    function checkPass() {
+        if(document.getElementById('pass').value === "2024") {
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            render();
+        } else alert("קוד שגוי");
+    }
+
+    function render() {
+        const area = document.getElementById('questions_area');
+        schema.forEach((sec) => {
+            area.innerHTML += `<div class="cat-title ${sec.c}">${sec.t}</div>`;
+            sec.qs.forEach((q) => {
+                area.innerHTML += `
+                <div class="audit-item">
+                    <label>${q}</label>
+                    <div class="score-row">
+                        <select class="s-val" onchange="updateScore()"><option value="NA">N/A</option>${[10,9,8,7,6,5,4,3,2,1].map(n=>`<option value="${n}">${n}</option>`).join('')}</select>
+                        <input type="file" accept="image/*" id="f-${q}" style="display:none">
+                        <label for="f-${q}" class="photo-btn">📷 צילום/בחר</label>
+                    </div>
+                    <textarea class="c-val" placeholder="הערה לליקוי..."></textarea>
+                </div>`;
+            });
+        });
+    }
+
+    function updateScore() {
+        const scores = document.querySelectorAll('.s-val');
+        let total = 0, count = 0;
+        scores.forEach(s => {
+            if(s.value !== "NA") {
+                total += parseInt(s.value);
+                count++;
+            }
+        });
+        const final = count > 0 ? Math.round((total / (count * 10)) * 100) : 0;
+        const g = document.getElementById('g-curr');
+        g.innerText = final + "%";
+        
+        // צבעים הדרגתיים
+        if(final <= 60) g.style.borderColor = "#e74c3c";
+        else if(final <= 85) g.style.borderColor = "#f39c12";
+        else g.style.borderColor = "#27ae60";
+    }
+
+    function loadHistory() {
+        const station = document.getElementById('st_name').value;
+        const history = JSON.parse(localStorage.getItem('audits_v3') || "[]").filter(h => h.station === station);
+        const g = document.getElementById('g-hist');
+        if(history.length > 0) {
+            const avg = Math.round(history.reduce((a, b) => a + b.score, 0) / history.length);
+            g.innerText = avg + "%";
+            g.style.color = "#333";
+        } else {
+            g.innerText = "--";
+            g.style.color = "#999";
+        }
+    }
+
+    function showSummary() {
+        const station = document.getElementById('st_name').value;
+        if(!station) return alert("בחר תחנה!");
+        
+        let report = `*דוח ביקורת - ${station}*\nציון: ${document.getElementById('g-curr').innerText}\n`;
+        report += `מבקר: ${document.getElementById('insp_name').value}\n\n`;
+        
+        document.querySelectorAll('.audit-item').forEach(item => {
+            const s = item.querySelector('.s-val').value;
+            if(s !== "NA") {
+                report += `• ${item.querySelector('label').innerText.substring(0,25)}...: *${s}/10*\n`;
+                const c = item.querySelector('.c-val').value;
+                if(c) report += `  הערה: ${c}\n`;
+            }
+        });
+        
+        report += `\n*סיכום:* ${document.getElementById('gen_note').value || "תקין"}`;
+        document.getElementById('sum-text').innerText = report;
+        document.getElementById('modal').style.display = 'block';
+    }
+
+    function sendWA() {
+        const phone = document.getElementById('mgr_phone').value;
+        if(!phone) return alert("הזן טלפון מנהל");
+        
+        // שמירה להיסטוריה
+        const history = JSON.parse(localStorage.getItem('audits_v3') || "[]");
+        history.push({ station: document.getElementById('st_name').value, score: parseInt(document.getElementById('g-curr').innerText), date: new Date() });
+        localStorage.setItem('audits_v3', JSON.stringify(history));
+
+        const text = encodeURIComponent(document.getElementById('sum-text').innerText);
+        window.open(`https://wa.me/972${phone.startsWith('0') ? phone.substring(1) : phone}?text=${text}`);
+        closeModal();
+    }
+
+    function closeModal() { document.getElementById('modal').style.display = 'none'; }
+</script>
+</body>
+</html>
