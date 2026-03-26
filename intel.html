@@ -19,7 +19,7 @@
         /* תפריט ראשי */
         #startup_menu { text-align: center; padding: 50px 20px; }
 
-        /* דאשבורד וציונים */
+        /* דאשבורד וציונים (השעונים) */
         .dashboard { position: sticky; top: 0; z-index: 1000; background: white; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-bottom: 3px solid var(--p); }
         .dash-top { display: flex; justify-content: space-between; margin-bottom: 12px; }
         .gauge-container { text-align: center; width: 32%; }
@@ -47,8 +47,9 @@
         #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto; padding: 15px; }
         .modal-body { background: white; padding: 25px; border-radius: 15px; max-width: 500px; margin: auto; margin-top: 50px; text-align: center; }
 
-        /* אזור הדפסה נסתר - רוחב 1000 למניעת חיתוך באייפון */
-        #print-area { display: none; width: 1000px; padding: 40px; background: white; direction: rtl; }
+        /* אזור ההדפסה הנסתר - הפתרון לחיתוך באייפון */
+        #print-wrapper { position: absolute; left: -9999px; top: 0; direction: ltr; }
+        #print-area { width: 1000px; padding: 40px; background: white; direction: rtl; }
     </style>
 </head>
 <body>
@@ -65,10 +66,10 @@
 
 <div id="startup_menu" style="display:none;">
     <div class="container" style="text-align:center; padding-top:50px;">
-        <h2>שלום, בחר פעולה:</h2>
-        <button class="btn btn-primary" onclick="startNew()">➕ התחל ביקורת חדשה</button>
-        <button class="btn" style="background:#f39c12; color:white; margin-top:20px;" onclick="alert('היסטוריה נשמרת באופן מקומי')">📂 היסטוריית דוחות</button>
-        <button class="btn" style="background:#666; color:white; margin-top:20px;" onclick="location.reload()">🔒 יציאה מאובטחת</button>
+        <h2>שלום שמעון, בחר פעולה:</h2>
+        <button class="btn btn-primary" onclick="startNewAudit()">➕ התחל ביקורת חדשה</button>
+        <button class="btn" style="background:#f39c12; color:white; margin-top:20px;" onclick="alert('היסטוריה נשמרת באופן מקומי במכשיר זה')">📂 היסטוריית דוחות</button>
+        <button class="btn" style="background:#666; color:white; margin-top:20px;" onclick="location.reload()">🔒 התנתק</button>
     </div>
 </div>
 
@@ -85,8 +86,8 @@
         <div class="card">
             <label>בחר טופס לביצוע:</label>
             <select id="form_selector" onchange="loadForm()" style="border: 2px solid var(--p); font-weight: bold;">
-                <option value="">-- בחר טופס --</option>
-                <optgroup label="🧹 ניקיון">
+                <option value="">-- בחר טופס מהרשימה --</option>
+                <optgroup label="🧹 סיורי ניקיון">
                     <option value="clean_ninedine">סיור ניקיון - Nine Dine</option>
                     <option value="clean_bento">סיור ניקיון - Bento</option>
                     <option value="clean_nona">סיור ניקיון - Nona</option>
@@ -106,7 +107,7 @@
         <div id="questions_area"></div>
 
         <div id="summary_card" class="card" style="display:none;">
-            <label>הערות לסיכום:</label>
+            <label>הערות לסיכום הביקורת:</label>
             <textarea id="gen_note" rows="3" placeholder="הערות כלליות..."></textarea>
             <button class="btn btn-primary" onclick="showSummary()">💾 סיים והפק דוח PDF</button>
         </div>
@@ -122,7 +123,9 @@
     </div>
 </div>
 
-<div id="print-area"></div>
+<div id="print-wrapper">
+    <div id="print-area"></div>
+</div>
 
 <script>
     const formsDB = {
@@ -134,7 +137,7 @@
             { cat: "כללי", qs: ["עמדות הגשה נקיות", "פסים קרים וחמים נקיים", "רצפה נקייה", "שולחנות וכסאות נקיים", "אזור חומוס נקי"] }
         ]},
         "clean_nona": { title: "סיור ניקיון - Nona", schema: [
-            { cat: "כללי", qs: ["דלפקי הגשה נקיים", "פסים חמים וקרים נקיים", "רצפה נקייה", "אמצעי היגיינה תקינים"] }
+            { cat: "כללי", qs: ["דלפקי הגשה נקיים", "פסים חמים וקרים נקיים", "רצפה נקייה", "פחי אשפה ריקים"] }
         ]},
         "clean_cafe": { title: "סיור ניקיון - בתי קפה", schema: [
             { cat: "כללי", qs: ["קופות ועמדות TA נקיות", "מכונות קפה ואייס נקיות", "רצפה ופחים נקיים"] }
@@ -143,9 +146,9 @@
             { cat: "מערכות קירור", qs: ["הפרדה בין גולמי למוכן?", "מזון מכוסה/עטוף?", "מדבקות תאריך פתיחה?", "אחסון ביצים תקין?"] },
             { cat: "תהליכי ייצור", qs: ["עבודה עפ קוד צבעים?", "ברז וכיור תקינים?", "מניעת זיהום צולב?", "תיעוד בישול תרמי?"] }
         ]},
-        "expiry_marlog": { title: "פגי תוקף וניקיון - מרלו\"ג", schema: [
+        "expiry_marlog": { title: "פגי תוקף - מרלו\"ג", schema: [
             { cat: "מקררים ומקפיאים", qs: ["מקרר ירקות מחוטאים", "מקרר ירקות גולמי", "מקפיאים נקיים וסגורים"] },
-            { cat: "מחסן יבש", qs: ["סידור והגבהה מהרצפה", "בדיקת FIFO", "פגי תוקף במוצרים יבשים?"] }
+            { cat: "מחסן יבש", qs: ["סידור והגבהה מהרצפה", "בדיקת FIFO", "מוצרים פגי תוקף?"] }
         ]}
     };
 
@@ -159,7 +162,7 @@
         } else alert("קוד שגוי");
     }
 
-    function startNew() {
+    function startNewAudit() {
         document.getElementById('startup_menu').style.display = 'none';
         document.getElementById('app').style.display = 'block';
     }
@@ -247,7 +250,7 @@
             html2canvas: { 
                 scale: 2, 
                 useCORS: true, 
-                width: 1000, // הפתרון לחיתוך באייפון!
+                width: 1000, // הפתרון הסופי לחיתוך באייפון
                 windowWidth: 1000 
             },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
