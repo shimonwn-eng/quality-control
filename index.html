@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Intel QC - Final System</title>
+    <title>Intel QC - Final</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root { --p: #0071c5; --d: #003c71; --g: #27ae60; --y: #f39c12; --r: #e74c3c; --na: #95a5a6; --bg: #f4f7f9; }
@@ -11,37 +11,29 @@
         body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 0; direction: rtl; }
         .page { display: none; min-height: 100vh; }
         .active-page { display: block; }
-        #login_page { background: var(--d); display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-card { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 100%; max-width: 350px; }
-        .pin-input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 12px; font-size: 32px; text-align: center; letter-spacing: 10px; margin: 20px 0; outline: none; }
-        .dashboard { position: sticky; top: 0; z-index: 1000; background: white; padding: 10px 20px; display: flex; justify-content: space-around; border-bottom: 3px solid var(--p); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .stat { text-align: center; }
-        .stat-val { display: block; font-weight: 900; font-size: 18px; color: var(--p); }
-        .stat-lbl { font-size: 11px; color: #666; font-weight: bold; }
+        #login_page { background: var(--d); display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .login-card { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 90%; max-width: 350px; }
+        .pin-input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 12px; font-size: 32px; text-align: center; margin: 20px 0; outline: none; }
         .container { padding: 15px; max-width: 800px; margin: auto; padding-bottom: 100px; }
         .card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .cat-title { background: linear-gradient(to left, var(--p), var(--d)); color: white; padding: 12px; border-radius: 10px; margin: 25px 0 10px; font-weight: bold; }
+        .btn-main { background: var(--p); color: white; width: 100%; padding: 18px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; margin-top: 10px; cursor: pointer; }
         .q-item { border-bottom: 1px solid #eee; padding: 15px 0; }
         .score-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 10px; }
-        .btn-s { padding: 12px 2px; border: 1.5px solid #eee; border-radius: 8px; font-size: 12px; font-weight: bold; background: #f9f9f9; cursor: pointer; }
-        .btn-s.active[data-v="100"] { background: var(--g); color: white; border-color: var(--g); }
-        .btn-s.active[data-v="50"] { background: var(--y); color: white; border-color: var(--y); }
-        .btn-s.active[data-v="0"] { background: var(--r); color: white; border-color: var(--r); }
-        .btn-s.active[data-v="-1"] { background: var(--na); color: white; border-color: var(--na); }
-        .q-note { width: 100%; margin-top: 10px; border: 1.5px dashed #cbd5e0; border-radius: 8px; padding: 10px; font-size: 14px; outline: none; }
-        .cam-btn { display: block; margin-top: 10px; background: #edf2f7; padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; cursor: pointer; color: var(--d); }
-        .preview img { width: 60px; height: 60px; border-radius: 6px; object-fit: cover; margin-top: 5px; border: 1px solid #ddd; }
-        .btn-main { background: var(--p); color: white; width: 100%; padding: 18px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; margin-top: 10px; }
-        #pdf_zone { position: absolute; left: -10000px; width: 850px; background: white; padding: 40px; direction: rtl; }
+        .btn-s { padding: 10px 2px; border: 1.5px solid #eee; border-radius: 8px; font-size: 12px; font-weight: bold; background: #f9f9f9; }
+        .btn-s.active[data-v="100"] { background: var(--g); color: white; }
+        .btn-s.active[data-v="50"] { background: var(--y); color: white; }
+        .btn-s.active[data-v="0"] { background: var(--r); color: white; }
+        .btn-s.active[data-v="-1"] { background: var(--na); color: white; }
+        #pdf_zone { position: absolute; left: -10000px; width: 800px; background: white; padding: 40px; direction: rtl; }
         .pdf-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .pdf-table th, .pdf-table td { border: 1px solid #000; padding: 8px; text-align: right; font-size: 12px; vertical-align: top; }
+        .pdf-table th, .pdf-table td { border: 1px solid #000; padding: 8px; text-align: right; font-size: 12px; }
     </style>
 </head>
 <body>
 
 <div id="login_page" class="page active-page">
     <div class="login-card">
-        <h2 style="color:var(--p)">Intel QC Login</h2>
+        <h2 style="color:var(--p)">Intel QC</h2>
         <input type="tel" id="pin" class="pin-input" maxlength="4" placeholder="----" oninput="if(this.value.trim()=='2024') showPage('menu_page')">
         <button class="btn-main" onclick="if(document.getElementById('pin').value.trim()=='2024') showPage('menu_page')">כניסה</button>
     </div>
@@ -55,10 +47,6 @@
 </div>
 
 <div id="audit_page" class="page">
-    <div class="dashboard">
-        <div class="stat"><span class="stat-lbl">נוכחי</span><span id="live_score" class="stat-val">0%</span></div>
-        <button onclick="showPage('menu_page')" style="border:none; background:none; font-size:24px;">🏠</button>
-    </div>
     <div class="container">
         <div class="card">
             <label>מבקר:</label><input type="text" id="inspector" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
@@ -66,8 +54,6 @@
             <select id="form_type" onchange="initForm()" style="width:100%; padding:12px; border-radius:10px; border:2px solid var(--p); font-weight:bold;">
                 <option value="">-- בחר מתחם --</option>
                 <option value="nd_expiry">פגי תוקף - ניין דיין</option>
-                <option value="bento_expiry">פגי תוקף - בנטו</option>
-                <option value="nona_expiry">פגי תוקף - נונה</option>
                 <option value="marlog">מרלו"ג - תוקף וניקיון</option>
             </select>
         </div>
@@ -96,21 +82,17 @@
         session.type = type;
         let html = "";
         DB[type].cats.forEach((c, ci) => {
-            html += `<div class="cat-title">${c.t}</div>`;
+            html += `<div style="background:#eee; padding:10px; font-weight:bold; margin-top:10px;">${c.t}</div>`;
             c.qs.forEach((q, qi) => {
                 const id = `q_${ci}_${qi}`;
                 html += `
                 <div class="card q-item">
-                    <div style="font-weight:bold;">${q}</div>
+                    <div>${q}</div>
                     <div class="score-group">
                         <button class="btn-s" data-v="100" onclick="setS('${id}', 100, this)">100%</button>
                         <button class="btn-s" data-v="50" onclick="setS('${id}', 50, this)">50%</button>
                         <button class="btn-s" data-v="0" onclick="setS('${id}', 0, this)">0%</button>
                     </div>
-                    <textarea class="q-note" placeholder="הערה..." oninput="session.notes['${id}']=this.value"></textarea>
-                    <label class="cam-btn" onclick="document.getElementById('cam_${id}').click()">📸 צרף תמונה</label>
-                    <input type="file" id="cam_${id}" style="display:none" accept="image/*" onchange="handleImg('${id}', this)">
-                    <div id="pre_${id}" class="preview"></div>
                 </div>`;
             });
         });
@@ -123,19 +105,10 @@
         btn.classList.add('active');
         calc();
     }
-    function handleImg(id, input) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            session.photos[id] = [e.target.result];
-            document.getElementById('pre_'+id).innerHTML = `<img src="${e.target.result}">`;
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
     function calc() {
         let s = 0, count = 0;
-        for(let k in session.scores) { if(session.scores[k] !== -1) { s += session.scores[k]; count++; } }
+        for(let k in session.scores) { s += session.scores[k]; count++; }
         session.score = count > 0 ? Math.round(s/count) : 0;
-        document.getElementById('live_score').innerText = session.score + "%";
     }
     function finishAudit() {
         session.ins = document.getElementById('inspector').value;
@@ -144,19 +117,17 @@
     }
     function exportPDF() {
         const config = DB[session.type];
-        let html = `<div style="text-align:right"><h1>דוח ביקורת - ${config.name}</h1><p>מבקר: ${session.ins} | ציון: ${session.score}%</p></div><table class="pdf-table"><thead><tr><th>סעיף</th><th>ציון</th><th>הערה</th><th>תמונה</th></tr></thead><tbody>`;
+        let html = `<h1>דוח ביקורת - ${config.name}</h1><p>מבקר: ${session.ins} | ציון: ${session.score}%</p><table class="pdf-table"><thead><tr><th>סעיף</th><th>ציון</th></tr></thead><tbody>`;
         config.cats.forEach((c, ci) => {
-            html += `<tr style="background:#eee"><td colspan="4"><b>${c.t}</b></td></tr>`;
             c.qs.forEach((q, qi) => {
                 const id = `q_${ci}_${qi}`;
-                const val = session.scores[id] == 100 ? "100%" : (session.scores[id] == 50 ? "50%" : "0%");
-                const img = session.photos[id] ? `<img src="${session.photos[id][0]}" style="width:50px;">` : "";
-                html += `<tr><td>${q}</td><td>${val}</td><td>${session.notes[id] || ""}</td><td>${img}</td></tr>`;
+                const val = session.scores[id] || "לא סומן";
+                html += `<tr><td>${q}</td><td>${val}%</td></tr>`;
             });
         });
         html += `</tbody></table>`;
         document.getElementById('pdf_zone').innerHTML = html;
-        html2pdf().set({ margin: 10, filename: 'Audit.pdf', html2canvas: { scale: 2 }, jsPDF: { format: 'a4' } }).from(document.getElementById('pdf_zone')).save().then(() => location.reload());
+        html2pdf().set({ margin: 10, filename: 'Audit.pdf' }).from(document.getElementById('pdf_zone')).save().then(() => location.reload());
     }
 </script>
 </body>
