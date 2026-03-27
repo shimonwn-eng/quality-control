@@ -3,46 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Intel QC System</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <title>Intel QC - V2</title>
     <style>
-        :root { --p: #0071c5; --d: #003c71; --bg: #f4f7f9; }
-        body { font-family: system-ui, sans-serif; background: var(--bg); margin: 0; direction: rtl; }
-        .page { display: none; height: 100vh; }
-        .active-page { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        :root { --p: #0071c5; --bg: #f4f7f9; }
+        body { font-family: system-ui, sans-serif; background: var(--bg); margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; direction: rtl; }
         .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 350px; }
         .pin-input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 12px; font-size: 32px; text-align: center; margin: 20px 0; outline: none; }
         .btn-main { background: var(--p); color: white; width: 100%; padding: 18px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        #app_content { display: none; }
     </style>
 </head>
 <body>
 
-<div id="login_page" class="page active-page">
-    <div class="card">
-        <h2 style="color:var(--p)">Intel QC Login</h2>
-        <p>הקש קוד גישה (2024)</p>
-        <input type="tel" id="pin" class="pin-input" maxlength="4" placeholder="----">
-        <button class="btn-main" onclick="checkPin()">כניסה למערכת</button>
-    </div>
+<div id="login_page" class="card">
+    <h2 style="color:var(--p)">Intel QC - גרסה 2.0</h2>
+    <p>הקש קוד גישה</p>
+    <input type="tel" id="pin" class="pin-input" maxlength="4" placeholder="----">
+    <button class="btn-main" onclick="checkPin()">כניסה למערכת</button>
+    <p id="error_msg" style="color:red; display:none; margin-top:10px;">קוד שגוי, נסה שוב</p>
 </div>
 
-<div id="menu_page" class="page">
-    <div class="card">
-        <h2 style="color:var(--p)">ברוך הבא!</h2>
-        <p>המערכת פועלת בהצלחה.</p>
-        <button class="btn-main" onclick="location.reload()">התחל מחדש</button>
-    </div>
+<div id="app_content" class="card">
+    <h2 style="color:var(--p)">הצלחת להיכנס!</h2>
+    <p>המערכת מוכנה לעבודה.</p>
+    <button class="btn-main" style="background:#27ae60;" onclick="location.reload()">התחל מחדש</button>
 </div>
 
 <script>
     function checkPin() {
         const pin = document.getElementById('pin').value.trim();
+        // בדיקה אם הקוד הוא 2024
         if (pin === '2024') {
-            document.getElementById('login_page').classList.remove('active-page');
-            document.getElementById('menu_page').classList.add('active-page');
+            document.getElementById('login_page').style.display = 'none';
+            document.getElementById('app_content').style.display = 'block';
         } else {
-            alert("קוד שגוי, נסה שוב");
+            // אם הקוד שגוי - הצגת הודעה
+            document.getElementById('error_msg').style.display = 'block';
             document.getElementById('pin').value = '';
+            alert("קוד לא נכון. הקלדת: " + pin);
         }
     }
 </script>
