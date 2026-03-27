@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="robots" content="noindex, nofollow">
-    <title>Intel Haifa QC - The Ultimate Edition</title>
+    <title>Intel Haifa QC - מנהלים</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
@@ -54,7 +54,7 @@
 
         .btn-main { width: 100%; padding: 20px; border: none; border-radius: 15px; font-size: 19px; font-weight: 800; cursor: pointer; transition: 0.3s; background: var(--p); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
-        /* PDF */
+        /* PDF Render Zone */
         #pdf_zone { position: absolute; left: -20000px; top: 0; width: 1400px; background: white; padding: 60px; direction: rtl; }
         .pdf-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
         .pdf-table th, .pdf-table td { border: 1.5px solid #eee; padding: 15px; text-align: right; }
@@ -67,8 +67,8 @@
 <div id="login_page" class="page active-page">
     <div class="login-card">
         <h1 style="color:var(--p); margin:0;">Intel Haifa QC</h1>
-        <p>מערכת איכות, בטיחות מזון ותוקף - ניר עציון</p>
-        <div style="background:var(--l); padding:10px; border-radius:50px; font-size:12px; margin:20px 0; border:1px solid #d0e7ff; color:var(--p); font-weight:bold;">🔐 גישה מאובטחת למנהלים בלבד</div>
+        <p>מערכת איכות, בטיחות מזון ופגי תוקף - ניר עציון</p>
+        <div style="background:var(--l); padding:10px; border-radius:50px; font-size:12px; margin:20px 0; border:1px solid #d0e7ff; color:var(--p); font-weight:bold;">🔐 סביבת עבודה מאובטחת</div>
         <input type="password" id="pass_input" style="width:100%; padding:20px; border-radius:15px; border:2px solid #ddd; text-align:center; font-size:22px; box-sizing:border-box;" placeholder="קוד גישה (2024)">
         <button class="btn-main" style="margin-top:20px;" onclick="checkLogin()">כניסה למערכת</button>
     </div>
@@ -84,7 +84,7 @@
         </div>
         <div style="display:grid; gap:20px; max-width:550px; margin:40px auto;">
             <button class="btn-main" onclick="showPage('audit_page')">➕ ביקורת איכות חדשה</button>
-            <button class="btn-main" style="background:white; color:var(--p); border:3px solid var(--p);" onclick="openHistory()">📂 היסטוריית דוחות</button>
+            <button class="btn-main" style="background:white; color:var(--p); border:3px solid var(--p);" onclick="openHistory()">📂 היסטוריית דוחות והשוואה</button>
             <button class="btn-main" style="background:#edf2f7; color:#4a5568;" onclick="location.reload()">🔒 התנתקות</button>
         </div>
     </div>
@@ -109,22 +109,30 @@
             <label style="font-weight:800; color:var(--p); font-size:16px;">שם המבקר/ת:</label>
             <input type="text" id="inspector_name" style="margin-top:10px; width:100%; padding:15px; border-radius:12px; border:2px solid #eee; font-size:16px; box-sizing:border-box;" placeholder="הכנס שם מלא">
             
-            <label style="font-weight:800; color:var(--p); display:block; margin-top:25px; font-size:16px;">בחר מתחם בדיקה:</label>
+            <label style="font-weight:800; color:var(--p); display:block; margin-top:25px; font-size:16px;">בחר מתחם / טופס בדיקה:</label>
             <select id="form_select" onchange="initForm()" style="margin-top:10px; width:100%; border:3px solid var(--p); font-weight:900; padding:15px; border-radius:12px; font-size:18px; box-sizing:border-box;">
-                <option value="">-- בחר טופס מקיף --</option>
-                <optgroup label="🍴 Nine Dine">
-                    <option value="nd_clean">סיור ניקיון מלא - Nine Dine</option>
-                    <option value="nd_food">בטיחות מזון ותוקף - Nine Dine</option>
+                <option value="">-- בחר טופס --</option>
+                <optgroup label="🍴 מסעדת Nine Dine">
+                    <option value="nd_expiry"> Nine Dine - ביקורת פגי תוקף</option>
+                    <option value="nd_clean"> Nine Dine - סיור ניקיון</option>
+                    <option value="nd_food"> Nine Dine - בטיחות מזון</option>
                 </optgroup>
-                <optgroup label="🍱 Bento & Nona">
-                    <option value="bento">בקרת איכות ותוקף - Bento</option>
-                    <option value="nona">בקרת איכות ותוקף - Nona</option>
+                <optgroup label="🍱 Bento">
+                    <option value="bento_expiry"> Bento - ביקורת פגי תוקף</option>
+                    <option value="bento_clean"> Bento - סיור ניקיון</option>
+                    <option value="bento_food"> Bento - בטיחות מזון</option>
                 </optgroup>
-                <optgroup label="☕ בתי קפה">
-                    <option value="cafe">בקרת איכות ותוקף - אילנ'ס</option>
+                <optgroup label="🥗 Nona">
+                    <option value="nona_expiry"> Nona - ביקורת פגי תוקף</option>
+                    <option value="nona_clean"> Nona - סיור ניקיון</option>
+                    <option value="nona_food"> Nona - בטיחות מזון</option>
+                </optgroup>
+                <optgroup label="☕ בתי קפה (אילנ'ס)">
+                    <option value="cafe_food"> אילנ'ס - בטיחות ופגי תוקף</option>
+                    <option value="cafe_clean"> אילנ'ס - סיור ניקיון</option>
                 </optgroup>
                 <optgroup label="📦 לוגיסטיקה ומרלו&quot;ג">
-                    <option value="marlog">בקרת מרלו"ג, פגי תוקף ו-FIFO</option>
+                    <option value="marlog_expiry"> מרלו"ג - פגי תוקף וניקיון</option>
                 </optgroup>
             </select>
         </div>
@@ -151,73 +159,138 @@
     <div style="background:white; padding:50px; border-radius:35px; max-width:550px; margin:50px auto; text-align:center;">
         <div style="font-size:70px; margin-bottom:15px;">📑</div>
         <h2 style="color:var(--p); font-size:28px;">הדוח נשמר במערכת!</h2>
-        <p style="color:#666; font-size:16px; margin-bottom:30px;">הדוח כולל את כל השאלות, פגי התוקף, ההערות והתמונות שצירפת.</p>
+        <p style="color:#666; font-size:16px; margin-bottom:30px;">הנתונים הוזנו בבטחה. כעת ניתן להפיק את קובץ ה-PDF הרשמי ולשתף אותו.</p>
         <button class="btn-main" onclick="exportPDF()">📤 שלח PDF עכשיו (WhatsApp)</button>
-        <button class="btn-main" style="background:#f1f3f5; color:#444; margin-top:15px; border:2px solid #ddd;" onclick="document.getElementById('modal_pdf').style.display='none'">חזור למסך הביקורת</button>
+        <button class="btn-main" style="background:#f1f3f5; color:#444; margin-top:15px; border:2px solid #ddd;" onclick="document.getElementById('modal_pdf').style.display='none'">חזור למסך</button>
     </div>
 </div>
 
 <div id="pdf_zone"></div>
 
 <script>
-    // --- ה-DATABASE האולטימטיבי והמלא ---
+    // --- DATABASE האמיתי מהאקסלים שהועלו ---
     const DB = {
-        "nd_clean": {
-            name: "סיור ניקיון מקיף - Nine Dine",
+        /* ----- NINE DINE ----- */
+        "nd_expiry": {
+            name: "ביקורת פגי תוקף - Nine Dine",
             sections: [
-                { t: "רחבת כניסה ולובי", qs: ["קופות נקיות משאריות לכלוך ופירורים", "עמדת סכו\"ם נקייה, מסודרת ומלאה", "עמדת שטיפת ידיים - מתקן סבון מלא, נייר ופח", "רצפה נקייה בכל שטח הכניסה", "שילוט תפריטים נקי ומעודכן", "זכוכיות כניסה ודלתות מבריקות וללא טביעות אצבע", "ניקיון ופינוי פחי אשפה בכניסה"] },
-                { t: "עמדות הגשה ופסים", qs: ["פלנצ'ות ומשטחי עבודה מבריקים ונקיים", "מנדפים נקיים ללא שומן או טפטופים", "דלפקי הגשה נקיים משאריות (כולל ויטרינות)", "פסי הגשה חם/קר נקיים ומסודרים", "מתקני רטבים ותוספות נקיים ללא נזילות", "כלים ותרוודים מונחים במקומות נקיים"] },
-                { t: "חדר אוכל", qs: ["שולחנות וכסאות נקיים וללא שאריות מזון", "עמדות פינוי כלים (טרולי) נקיות ומסודרות", "מכונות שתייה וקפה נקיות, כולל מגשיות איסוף נוזלים", "רצפת חדר האוכל נקייה (היעדר כתמים)", "פחי אשפה בחדר האוכל ריקים ונקיים"] },
-                { t: "פגי תוקף וסימונים - ניקיון", qs: ["בדיקת פגי תוקף רטבים בעמדות ההגשה הציבוריות", "בדיקת פגי תוקף מוצרי TA (מנות ארוזות במקררים)", "סימון תאריכי פתיחה על כל מוצר פתוח במקרר ציבורי", "בדיקת FIFO במוצרים מוצגים לקהל", "תיעוד יומן ניקיונות שירותים ומטבח (חתום)"] },
-                { t: "מטבח אחורי", qs: ["רצפת המטבח נקייה, יבשה וללא שומנים", "כיורי שטיפה נקיים ללא כלים עומדים/מים עומדים", "פחי אשפה פנימיים סגורים ונקיים", "קירות, קרמיקה ומפסקי חשמל נקיים מנתזים", "מקררי יום ומחסן קטן נקיים ומסודרים"] }
+                { t: "מקרר 4 - מטבח חם מוגמר, קומה 0", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר 3 - קצבייה בע\"ד בתהליך, קומה 0", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר 8 - הפשרת בעלי כנף, קומה 0", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר 5 - הפשרת בקר, קומה 0", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר 2 - הפשרת דגים, קומה 0", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר 7 - חלבי מוגמר, קומה 0", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] }
+            ]
+        },
+        "nd_clean": {
+            name: "סיור ניקיון - Nine Dine",
+            sections: [
+                { t: "רחבת כניסה", qs: ["האם אזור הקופות נקי?", "האם עמדת הצטיידות (סכום ומגשים) נקיה ומסודרת?", "האם עמדת שטיפת ידיים נקייה (סבון ונייר)?", "האם אזור כניסה לחדר אוכל נקי?"] },
+                { t: "עמדות הגשה", qs: ["האם פלנצ'ות נקיות ומוכנות לעבודה?", "האם המנדפים נקיים?", "האם דלפקי הגשה ומשטחי עבודה נקיים?", "האם פסים קרים וחמים נקיים?", "האם הריצפה והתעלות ריקות משאריות מזון?", "האם מקררים בדלפקי הגשה ריקים ונקיים?"] },
+                { t: "חדר שטיפה ומדיחים", qs: ["האם המסוע החיצוני נקי?", "האם בוצע פירוק דיזות ורשתות?", "האם קירות פנים מדיח נקי?", "האם מדיח גסטרונום נקי?", "האם עגלות איחסון צלחות נקיות?"] },
+                { t: "קצבייה וקונדיטוריה", qs: ["האם כיורים ומשטחי עבודה נקיים (קצבייה)?", "האם מטחנת בשר נקייה?", "האם מדפים ורצפה נקיים (קונדיטוריה)?", "האם מיקסרים נקיים משאריות בצק?"] }
             ]
         },
         "nd_food": {
-            name: "בטיחות מזון ופגי תוקף - Nine Dine",
+            name: "בטיחות מזון - Nine Dine",
             sections: [
-                { t: "קירור והקפאה", qs: ["הפרדה מלאה בין מוצרים גולמיים למוכנים לאכילה", "כל המזון במקרר מכוסה הרמטית ועטוף", "אחסון ביצים במקרר ייעודי (או מדף תחתון בלבד)", "טמפרטורה תקינה במקררי העבודה (מתחת ל-4 מעלות)", "ניקיון מדפים פנימיים ורצפת המקרר", "גומיות איטום במקררים שלמות ונקיות"] },
-                { t: "תהליכי ייצור ובטיחות", qs: ["שימוש בקרשי חיתוך לפי קוד צבעים (בשרי, חלבי, פרווה, ירק)", "מניעת זיהום צולב באופן מוחלט בתחנות העבודה", "לבוש מגן מלא לעובדים: כפפות, כיסוי ראש, סינר נקי", "תיעוד בישול תרמי (מד טמפרטורה)", "תיעוד חיטוי ירקות כנדרש (כולל רישום)", "זמינות ושימוש בחומרי ניקוי מאושרים למטבח בלבד"] },
-                { t: "פגי תוקף (חומרי גלם וייצור)", qs: ["בדיקת פגי תוקף בשרים/עופות/דגים במקררים", "בדיקת פגי תוקף סלטים בהכנה מוקדמת", "בדיקת פגי תוקף רטבים וצמצומים מייצור עצמי", "קיומן של מדבקות תאריך ייצור/תוקף על כל מוצר שהוכן"] }
+                { t: "עמדות הגשה", qs: ["האם מתקיימת עבודה ע\"פ קוד צבעים?", "האם הטמפ' של המזון בהגשה תקינה?", "האם נשמרות דוגמאות מזון? (72 שעות)", "קיימת סכנה לזיהום צולב?", "האם נצפו מזון ללא מדבקת תאריך פתיחה?", "לבוש עובדים (כפפות, כיסוי ראש, סינר)?", "האם נצפו עובדים שמשתמשים בטלפון?"] },
+                { t: "מטבח חם", qs: ["האם מתבצע מעקב טמפ' של המזון?", "האם נמצא מזון שיש לזרוק?", "האם מתבצע תיעוד של בישול תרמי?", "האם קיים סדר המזון על עגלות (עם מדבקה)?", "שמן הטיגון בצ'יפסר נקי ותועד?"] },
+                { t: "עיבוד בשר (קצבייה)", qs: ["האם קיימת שמירה על הפרדה בין המדורים?", "האם הבע\"ד מסודר על גסטרונומים מחוררים ותועד?"] }
             ]
         },
-        "bento": {
-            name: "בקרת איכות ותוקף - Bento",
+        
+        /* ----- BENTO ----- */
+        "bento_expiry": {
+            name: "ביקורת פגי תוקף - Bento",
             sections: [
-                { t: "ניקיון, ציוד וסדר", qs: ["דלפקי הגשה נקיים ללא שאריות אורז/רטבים", "עמדת החומוס נקייה ומסודרת במהלך הסרוויס", "מקררי TA (To-Go) מסודרים ואסתטיים", "סביבת עבודה אחורית נקייה ומאורגנת", "ניקיון מכשור ייעודי (מכונת אורז, סיר אידוי וכו')", "זמינות סכו\"ם, מפיות ורטבים אישיים ללקוח"] },
-                { t: "בטיחות מזון ופגי תוקף", qs: ["בדיקת פגי תוקף רטבים אסיאתיים (טריאקי, סויה, צ'ילי)", "בדיקת פגי תוקף אורז/סושי בתיעוד יומי", "סימון מדבקות תאריך פתיחה על רטבים וסלטים", "הפרדה נאותה במקררי העבודה בין דגים לירקות", "שימוש בכפפות וציוד ייעודי נפרד לבנטו"] }
+                { t: "מקרר 9 - ירקות גולמי", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר 5 - מוגמר מטבח חם", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר 2 - בע\"ד בתהליך", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר 1 - סלטייה מוגמר", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר 6 - הפשרות בעלי כנף", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר 7 - הפשרות בקר", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] }
             ]
         },
-        "nona": {
-            name: "בקרת איכות ותוקף - Nona",
+        "bento_clean": {
+            name: "סיור ניקיון - Bento",
             sections: [
-                { t: "ניקיון מתחם", qs: ["דלפקי הגשה נקיים משאריות ופירורים", "מכשור עבודה (גריל, טוסטר, מחבתות) נקי משומן שרוף", "רצפה בסביבת נונה ופחי אשפה קרובים נקיים", "סידור אסתטי של ממרחים, תוספות וסלטים בקערות"] },
-                { t: "בטיחות מזון ופגי תוקף", qs: ["בדיקת פגי תוקף גבינות ומוצרי חלב", "בדיקת פגי תוקף ירקות חתוכים, ממרחים ופסטו", "סימון תאריכי פתיחה ברורים על רטבים בשימוש", "בדיקת טמפרטורת מקררי פס (סלטים חלביים)", "הקפדה על עטיפת מזון בשעות שפל (סגירה הרמטית)"] }
+                { t: "רחבת כניסה", qs: ["האם אזור הקופות נקי?", "האם עמדת הצטיידות (סכום ומגשים) נקיה?"] },
+                { t: "עמדות הגשה", qs: ["האם פלנצ'ות נקיות ומוכנות?", "האם הצ'יפסרים מכוסים ומכובים?", "האם מקררים בדלפקי הגשה ריקים ונקיים?"] },
+                { t: "חדר שטיפה", qs: ["האם המסוע החיצוני נקי?", "האם בוצע פירוק דיזות ורשתות?", "האם קרשי העבודה נקיים ולא בלויים?"] }
             ]
         },
-        "cafe": {
-            name: "בקרת איכות ותוקף - אילנ'ס (בתי קפה)",
+        "bento_food": {
+            name: "בטיחות מזון - Bento",
             sections: [
-                { t: "ניקיון דלפק ושירות", qs: ["מכונות קפה, סטימרים וטוחנים נקיים משאריות חלב", "מקרר כריכים מסודר, מואר ונקי", "תצוגת מאפים ועוגות נקייה ללא פירורים", "שולחנות ורצפת בית הקפה נקיים", "עמדת בחישה (סוכר/כוסות) מסודרת ומלאה"] },
-                { t: "בטיחות מזון ופגי תוקף", qs: ["בדיקת פגי תוקף כריכים וסלטים מראש (מדבקות יום)", "בדיקת פגי תוקף חלב ומוצריו במקרר פנימי", "בדיקת פגי תוקף מאפים ותאריכי הפשרה/אפייה", "סימון תאריך פתיחה (תוקף) על סירופים ורטבים לקפה"] }
+                { t: "עמדות הגשה", qs: ["עבודה ע\"פ קוד צבעים הנהוג בניר עציון?", "טמפ' מזון בהגשה תקינה?", "נשמרות דוגמאות מזון (72 שעות)?", "סכנה לזיהום צולב?"] },
+                { t: "עיבוד ירקות והכנת סלטים", qs: ["ברז וכיור + אמצעי היגיינה תקינים ומלאים?", "ירקות מחוטאים בקירור עם תאריך?", "תיעוד צינון בטופס 'קירור מהיר'?"] }
             ]
         },
-        "marlog": {
-            name: "בקרת מרלו\"ג, פגי תוקף ו-FIFO",
+
+        /* ----- NONA ----- */
+        "nona_expiry": {
+            name: "ביקורת פגי תוקף - Nona",
             sections: [
-                { t: "מקררים מרכזיים ומקפיאים", qs: ["מקרר 15 (ירקות מחוטאים) - בדיקת פגי תוקף קפדנית", "מקרר 16 (ירקות גולמי) - בדיקת פגי תוקף וריקבון", "בדיקת סידור בשיטת FIFO (ראשון נכנס ראשון יוצא) בכל המקררים", "ניקיון רצפות, מדפים וקירות בתוך כלל המקררים", "תקינות גומיות איטום בדלתות וידיות", "טמפרטורת מקפיאים בטווח התקני וללא הצטברות קרח"] },
-                { t: "מחסן יבש", qs: ["סדר כללי על המדפים (מוצרים באריזות סגורות)", "הגבהה של כלל הסחורה מהרצפה באמצעות משטחים נקיים", "בדיקת פגי תוקף קפדנית במוצרים יבשים (קמחים, פסטות) ושימורים", "פינוי קרטונים ריקים, ניילונים וניקיון כללי במחסן"] },
-                { t: "בטיחות, נהלים ותיעוד", qs: ["תיעוד קבלת סחורה תקין וחתום על ידי אחראי", "תיעוד טמפרטורות יומי חתום בכל עמדות הקירור", "מערך הדברה - מלכודות תקינות, נקיות מחרקים ומסומנות במפה"] }
+                { t: "מקרר 1 - ירקות גולמי", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר מוגמר 3", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר מוגמר 4", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר 5 - בע\"ד בתהליך", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר מוגמר 6 - מעדנים", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר מוגמר 7 - חלבי", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר מוגמר 8 - ד\"מ", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] }
+            ]
+        },
+        "nona_clean": {
+            name: "סיור ניקיון - Nona",
+            sections: [
+                { t: "רחבת כניסה וחדר אוכל", qs: ["האם אזור הקופות נקי?", "האם עמדת הצטיידות (סכום ומגשים) נקיה ומסודרת?", "האם שולחנות וכסאות נקיים?"] },
+                { t: "עמדות הגשה", qs: ["האם דלפקי הגשה ומשטחי עבודה נקיים?", "האם פסים קרים/חמים נקיים?", "האם רצפה ותעלות נקיות משאריות?"] }
+            ]
+        },
+        "nona_food": {
+            name: "בטיחות מזון - Nona",
+            sections: [
+                { t: "מערכות קירור", qs: ["שימוש במקררים לפי הייעוד?", "הפרדה בין גולמי למוכן?", "האם כל המזון מכוסה/עטוף?", "האם נצפו מזון ללא מדבקת תאריך פתיחה?"] },
+                { t: "מטבח חם", qs: ["עבודה ע\"פ קוד צבעים?", "מתבצע מעקב טמפ' לאורך התהליך?", "תיעוד של בישול תרמי?"] }
+            ]
+        },
+
+        /* ----- CAFE ----- */
+        "cafe_food": {
+            name: "בטיחות מזון ופגי תוקף - אילנ'ס",
+            sections: [
+                { t: "מחסן ואזורי אחסון", qs: ["האם נצפו מוצרים פגי תוקף?", "האם כל המזון מצופה/עטוף?", "מזון קנוי מסומן עם תאריך תוקף?", "אחסון בהגבהה והפרדה ממוצרי אריזה?"] },
+                { t: "אזור הגשה", qs: ["האם המוצרים המוגמרים שבמקרר בתוקף? (פיצה/קיש/קפה)", "מדבקה ייעודית למוצרים שיצאו מהקפאה?", "המוצרים המוגשים מהמטבח עם תאריך ייצור?"] },
+                { t: "עובדים", qs: ["העובדים לובשים בגדי עבודה נקיים? נעלי עבודה?", "לעובדים יש כובע?", "האם נצפו עובדים ללא כפפות?"] }
+            ]
+        },
+        "cafe_clean": {
+            name: "סיור ניקיון - בתי קפה",
+            sections: [
+                { t: "רחבת כניסה לבית הקפה", qs: ["האם אזור כניסה נקי?", "עמדת T.A (סוכר, כפיות, חבקים מלאה ונקיה)", "פחי אשפה מרוקנים ונקיים?"] },
+                { t: "עמדת הגשה", qs: ["האם עמדת עבודה והקופה נקיות?", "האם תנורי חימום / טוסטר נקיים?", "מכונת האייס והתפוזים נקיות ומלאות?", "כדי החלב נקיים?", "מכונת הקפה נקיה?"] }
+            ]
+        },
+
+        /* ----- MARLOG ----- */
+        "marlog_expiry": {
+            name: "ביקורת פגי תוקף וניקיון - מרלו\"ג",
+            sections: [
+                { t: "מקרר 15 - ירקות לאחר חיטוי", qs: ["מילוי טפסי בקרת טמפ' פעמיים ביום?", "האם המקרר נקי?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקרר 16 - ירקות גולמי", qs: ["מילוי טפסי בקרת טמפ' פעמיים ביום?", "האם המקרר נקי?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מקפיא 11 - בעלי כנף", qs: ["מילוי טפסי בקרת טמפ' פעמיים ביום?", "האם המקפיא נקי?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
+                { t: "מחסן יבש / קונדיטוריה / בתי קפה", qs: ["האם המחסנים מסודרים ונקיים?", "אחסון מתבצע בהגבהה והפרדה?", "בדיקת פגי תוקף - עבודה לפי FIFO?", "נצפו מוצרים באריזה פגומה/פתוחה?"] }
             ]
         }
     };
 
     let session = { scores: {}, notes: {}, photos: {}, type: "", inspector: "", score: 0, date: null, prevScore: null };
 
-    // --- לוגיקה וניהול פונקציות ---
-
+    /* --- פעולות וניהול מערכת --- */
     function checkLogin() {
         if(document.getElementById('pass_input').value === "2024") showPage('menu_page');
-        else alert("קוד שגוי! גישה נדחתה.");
+        else alert("קוד גישה שגוי!");
     }
 
     function showPage(id) {
@@ -235,7 +308,7 @@
         const config = DB[type];
         session = { scores: {}, notes: {}, photos: {}, type: type, inspector: "", score: 0, date: Date.now() };
         
-        const history = JSON.parse(localStorage.getItem('qc_intel_ultimate_24') || '[]');
+        const history = JSON.parse(localStorage.getItem('qc_intel_ultimate_final') || '[]');
         const last = history.find(h => h.type === type);
         const prevG = document.getElementById('g_prev');
         const trend = document.getElementById('trend_icon');
@@ -248,10 +321,9 @@
         config.sections.forEach((sec, sIdx) => {
             html += `<div class="cat-header"><span>${sec.t}</span><span>📋</span></div>`;
             
-            // מנגנון תמונות לפרק
             html += `
             <div class="photo-btn" onclick="document.getElementById('cam_${sIdx}').click()">
-                📸 צלם/צרף תמונות לליקויים בפרק זה
+                📸 הוסף תיעוד מצולם (תמונות מהשטח) לפרק זה
                 <input type="file" id="cam_${sIdx}" accept="image/*" capture="environment" multiple style="display:none" onchange="handlePhotos(${sIdx}, this)">
             </div>
             <div id="prev_${sIdx}" class="photo-preview"></div>`;
@@ -260,13 +332,13 @@
                 const qId = `q_${sIdx}_${qIdx}`;
                 html += `
                 <div class="audit-item" id="row_${qId}">
-                    <div class="question-text">${q}</div>
+                    <div style="font-size:18px; font-weight:700; margin-bottom:15px; color:#2c3e50;">${q}</div>
                     <div class="score-group">
                         <button class="btn-score btn-pass" onclick="setScore('${qId}', 1, this)">תקין</button>
                         <button class="btn-score btn-fail" onclick="setScore('${qId}', 0, this)">ליקוי</button>
                         <button class="btn-score btn-na" onclick="setScore('${qId}', -1, this)">N/A</button>
                     </div>
-                    <textarea class="note-area" id="note_${qId}" oninput="session.notes['${qId}']=this.value" placeholder="הוסף הערה או הסבר לממצא..."></textarea>
+                    <textarea class="note-area" id="note_${qId}" oninput="session.notes['${qId}']=this.value" placeholder="הוסף הערות וממצאים לתיקון..."></textarea>
                 </div>`;
             });
         });
@@ -300,7 +372,7 @@
         document.getElementById(`row_${id}`).classList.add('active');
         
         const noteArea = document.getElementById(`note_${id}`);
-        noteArea.style.display = (val === 0) ? "block" : "none"; // הערה נפתחת אוטומטית בליקוי
+        noteArea.style.display = (val === 0) ? "block" : "none"; 
         
         updateUI();
     }
@@ -326,7 +398,7 @@
     }
 
     function refreshStats() {
-        const history = JSON.parse(localStorage.getItem('qc_intel_ultimate_24') || '[]');
+        const history = JSON.parse(localStorage.getItem('qc_intel_ultimate_final') || '[]');
         document.getElementById('st_count').innerText = history.length;
         if(history.length > 0) {
             const avg = Math.round(history.reduce((a,b) => a + b.score, 0) / history.length);
@@ -336,13 +408,13 @@
     }
 
     function openHistory() {
-        const history = JSON.parse(localStorage.getItem('qc_intel_ultimate_24') || '[]');
+        const history = JSON.parse(localStorage.getItem('qc_intel_ultimate_final') || '[]');
         const list = document.getElementById('history_list');
-        if(history.length === 0) list.innerHTML = "<div class='card'><p style='text-align:center;'>אין דוחות שמורים.</p></div>";
+        if(history.length === 0) list.innerHTML = "<div class='card'><p style='text-align:center;'>אין דוחות שמורים במערכת.</p></div>";
         else {
             list.innerHTML = history.map(h => `
                 <div class="card" style="display:flex; justify-content:space-between; align-items:center; border-right:8px solid var(--p); padding:20px;">
-                    <div><h4 style="margin:0; font-size:18px;">${DB[h.type].name}</h4><p style="margin:5px 0 0; color:#666;">${new Date(h.date).toLocaleDateString('he-IL')} | ${h.inspector}</p></div>
+                    <div><h4 style="margin:0; font-size:18px;">${DB[h.type].name}</h4><p style="margin:5px 0 0; color:#666; font-size:14px;">${new Date(h.date).toLocaleDateString('he-IL')} | מבקר/ת: ${h.inspector}</p></div>
                     <div style="font-size:26px; font-weight:900; color:${h.score >= 85 ? 'var(--g)' : (h.score >= 70 ? 'var(--y)' : 'var(--r)')};">${h.score}%</div>
                 </div>
             `).join('');
@@ -354,9 +426,9 @@
         session.inspector = document.getElementById('inspector_name').value || "לא צוין";
         if(session.inspector === "לא צוין") { alert("אנא הכנס את שם המבקר לפני השמירה."); return; }
         
-        let history = JSON.parse(localStorage.getItem('qc_intel_ultimate_24') || '[]');
+        let history = JSON.parse(localStorage.getItem('qc_intel_ultimate_final') || '[]');
         history.unshift(session);
-        localStorage.setItem('qc_intel_ultimate_24', JSON.stringify(history));
+        localStorage.setItem('qc_intel_ultimate_final', JSON.stringify(history));
         
         document.getElementById('modal_pdf').style.display = 'block';
     }
@@ -367,9 +439,9 @@
         let html = `
             <div style="text-align:center; border-bottom:10px solid var(--p); padding-bottom:40px; margin-bottom:50px;">
                 <h1 style="color:var(--p); font-size:48px; margin:0;">דוח בקרת איכות ובטיחות מזון - אינטל חיפה</h1>
-                <h2 style="font-size:28px; color:#333;">מתחם: ${config.name}</h2>
-                <div style="font-size:22px; margin-top:30px; background:#f8f9fa; padding:30px; border:2px solid #eee; border-radius:15px; display:inline-block; min-width:700px;">
-                    <strong>מבקר:</strong> ${session.inspector} | <strong>תאריך:</strong> ${new Date(session.date).toLocaleDateString('he-IL')} | <strong>ציון סופי:</strong> <span style="color:var(--p); font-size:28px; font-weight:900;">${session.score}%</span>
+                <h2 style="font-size:32px; color:#333; margin-top:20px;">טופס: ${config.name}</h2>
+                <div style="font-size:22px; margin-top:35px; background:#f8f9fa; padding:30px; border:2px solid #eee; border-radius:15px; display:inline-block; min-width:700px;">
+                    <strong>מבקר/ת:</strong> ${session.inspector} | <strong>תאריך:</strong> ${new Date(session.date).toLocaleDateString('he-IL')} | <strong>ציון סופי:</strong> <span style="color:var(--p); font-size:30px; font-weight:900;">${session.score}%</span>
                 </div>
             </div>
             <table class="pdf-table">
@@ -383,7 +455,7 @@
                 const val = session.scores[id];
                 const note = session.notes[id] || "-";
                 
-                let stTxt = "טרם נבדק", stCol = "#999";
+                let stTxt = "לא נבדק", stCol = "#999";
                 if(val === 1) { stTxt = "תקין"; stCol = "#27ae60"; }
                 else if(val === 0) { stTxt = "ליקוי"; stCol = "#e74c3c"; }
                 else if(val === -1) { stTxt = "N/A"; stCol = "#7f8c8d"; }
@@ -391,9 +463,8 @@
                 html += `<tr><td style="font-weight:700;">${q}</td><td style="text-align:center; font-weight:900; color:${stCol}">${stTxt}</td><td style="line-height:1.5;">${note}</td></tr>`;
             });
             
-            // תמונות ב-PDF
             if(session.photos[sIdx] && session.photos[sIdx].length > 0) {
-                html += `<tr><td colspan="3" style="background:#fff; padding:20px;"><strong>תיעוד מצולם - ${sec.t}:</strong><br><div style="margin-top:10px;">`;
+                html += `<tr><td colspan="3" style="background:#fff; padding:20px;"><strong>תיעוד מצולם לפרק זה:</strong><br><div style="margin-top:10px;">`;
                 session.photos[sIdx].forEach(src => { html += `<img src="${src}" class="pdf-img">`; });
                 html += `</div></td></tr>`;
             }
@@ -403,16 +474,16 @@
         const sumText = document.getElementById('audit_summary').value;
         if(sumText) {
             html += `<div style="margin-top:50px; padding:35px; border:4px solid var(--p); border-radius:15px; background:#fcfcfc;">
-                <h3 style="margin-top:0; color:var(--p); font-size:24px;">סיכום מנהלים כללי והמלצות:</h3>
+                <h3 style="margin-top:0; color:var(--p); font-size:26px;">סיכום מנהלים והמלצות להמשך טיפול:</h3>
                 <p style="font-size:20px; line-height:1.8; color:#333; white-space:pre-wrap;">${sumText}</p>
             </div>`;
         }
         
-        html += `<div style="margin-top:80px; text-align:center; font-size:14px; color:#aaa; border-top:2px solid #eee; padding-top:30px;">הופק באמצעות מערכת QC אינטל - The Ultimate Edition v24.0 | פנימי אינטל</div>`;
+        html += `<div style="margin-top:80px; text-align:center; font-size:14px; color:#aaa; border-top:2px solid #eee; padding-top:30px;">הופק על ידי מערכת בקרת האיכות - ניר עציון (v24.0)</div>`;
         
         zone.innerHTML = html;
 
-        // הפתרון הסופי לאייפון: 1400px!
+        // הגדרת רוחב 1400 שמונע את החיתוך באייפון!
         const opt = {
             margin: 12,
             filename: `Intel_QC_Report_${session.inspector}.pdf`,
@@ -424,7 +495,7 @@
         html2pdf().set(opt).from(zone).output('blob').then(blob => {
             const file = new File([blob], `Audit_${session.inspector}.pdf`, { type: 'application/pdf' });
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                navigator.share({ files: [file], title: 'דוח ביקורת איכות - אינטל' });
+                navigator.share({ files: [file], title: 'דוח ביקורת - אינטל' });
             } else {
                 window.open(URL.createObjectURL(blob));
             }
