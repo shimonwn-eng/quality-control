@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="robots" content="noindex, nofollow">
-    <title>Intel Haifa QC - מנהלים</title>
+    <title>Intel Haifa QC - System</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
@@ -15,77 +15,87 @@
             --na: #95a5a6; --bg: #f4f7f9; --text: #2c3e50;
         }
 
+        * { box-sizing: border-box; }
+
         body { 
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
             background: var(--bg); margin: 0; padding: 0; color: var(--text);
             direction: rtl; overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
         }
 
         .page { display: none; min-height: 100vh; animation: fadeIn 0.4s ease; }
         .active-page { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Login */
+        /* מסך כניסה */
         #login_page { background: radial-gradient(circle at center, var(--p) 0%, var(--d) 100%); display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-card { background: white; padding: 50px; border-radius: 30px; box-shadow: 0 30px 80px rgba(0,0,0,0.4); width: 100%; max-width: 450px; text-align: center; }
+        .login-card { background: white; padding: 40px 25px; border-radius: 25px; box-shadow: 0 30px 60px rgba(0,0,0,0.4); width: 100%; max-width: 400px; text-align: center; }
 
-        /* Dashboard */
-        .dashboard { position: sticky; top: 0; z-index: 2000; background: rgba(255,255,255,0.95); padding: 15px 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); display: flex; justify-content: space-around; align-items: center; border-bottom: 5px solid var(--p); backdrop-filter: blur(10px); }
-        .gauge-circle { width: 85px; height: 85px; border-radius: 50%; border: 7px solid #f0f2f5; margin: auto; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; background: white; transition: 0.5s; }
+        /* שעונים */
+        .dashboard { position: sticky; top: 0; z-index: 2000; background: rgba(255,255,255,0.95); padding: 12px 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); display: flex; justify-content: space-around; align-items: center; border-bottom: 4px solid var(--p); backdrop-filter: blur(10px); }
+        .gauge-circle { width: 65px; height: 65px; border-radius: 50%; border: 5px solid #f0f2f5; margin: auto; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; background: white; transition: 0.5s; }
         
-        /* UI */
-        .container { padding: 25px; max-width: 900px; margin: auto; padding-bottom: 120px; }
-        .card { background: white; padding: 30px; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-        .cat-header { background: linear-gradient(135deg, var(--p) 0%, var(--d) 100%); color: white; padding: 20px 25px; border-radius: 15px; font-weight: 800; font-size: 19px; margin: 45px 0 25px; display: flex; justify-content: space-between; align-items: center; }
+        .container { padding: 15px; max-width: 800px; margin: auto; padding-bottom: 100px; width: 100%; }
+        .card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); width: 100%; }
         
-        .audit-item { background: white; padding: 25px; border-radius: 20px; margin-bottom: 20px; border-right: 12px solid #edf2f7; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.3s; }
-        .audit-item.active { border-right-color: var(--p); transform: translateX(-5px); }
+        .form-main-title { color: var(--d); font-size: 24px; font-weight: 900; border-bottom: 3px solid var(--p); padding-bottom: 10px; margin-bottom: 25px; line-height: 1.3; }
+        .cat-header { background: linear-gradient(135deg, var(--p) 0%, var(--d) 100%); color: white; padding: 15px 20px; border-radius: 12px; font-weight: 800; font-size: 17px; margin: 35px 0 20px; }
         
-        .score-group { display: flex; gap: 15px; margin-top: 15px; }
-        .btn-score { flex: 1; padding: 18px 5px; border: 2.5px solid #f1f3f5; background: #f8fafc; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.2s; }
-        .btn-pass.active { background: var(--g); color: white; border-color: var(--g); }
-        .btn-fail.active { background: var(--r); color: white; border-color: var(--r); }
+        .audit-item { background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #edf2f7; box-shadow: 0 3px 6px rgba(0,0,0,0.02); transition: 0.3s; width: 100%; }
+        .audit-item.active { border-color: var(--p); }
+        
+        /* 4 אפשרויות ציון */
+        .score-group { display: flex; gap: 5px; margin-top: 15px; flex-wrap: wrap; }
+        .btn-score { flex: 1; min-width: 60px; padding: 12px 2px; border: 2px solid #f1f3f5; background: #f8fafc; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; -webkit-tap-highlight-color: transparent; }
+        .btn-100.active { background: var(--g); color: white; border-color: var(--g); }
+        .btn-50.active { background: var(--y); color: white; border-color: var(--y); }
+        .btn-0.active { background: var(--r); color: white; border-color: var(--r); }
         .btn-na.active { background: var(--na); color: white; border-color: var(--na); }
 
-        .note-area { width: 100%; margin-top: 15px; padding: 15px; border: 2px dashed #cbd5e0; border-radius: 15px; font-size: 15px; display: none; outline: none; box-sizing: border-box; }
-        .photo-btn { background: #f1f3f5; border: 2px dashed #ccc; padding: 12px; border-radius: 12px; margin-top: 15px; text-align: center; cursor: pointer; font-weight: bold; color: var(--d); }
-        .photo-preview { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-        .photo-preview img { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
+        /* הערות ותמונות לכל שאלה */
+        .note-area { width: 100%; margin-top: 12px; padding: 12px; border: 2px dashed #cbd5e0; border-radius: 10px; font-size: 14px; outline: none; background: #fdfdfd; display:block; }
+        .photo-btn { background: #f1f3f5; border: 2px dashed #ccc; padding: 10px; border-radius: 10px; margin-top: 10px; text-align: center; cursor: pointer; font-weight: bold; color: var(--d); font-size: 13px; }
+        .photo-preview { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .photo-preview img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
 
-        .btn-main { width: 100%; padding: 20px; border: none; border-radius: 15px; font-size: 19px; font-weight: 800; cursor: pointer; transition: 0.3s; background: var(--p); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-main { width: 100%; padding: 18px; border: none; border-radius: 12px; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.3s; background: var(--p); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
-        /* PDF Render Zone */
-        #pdf_zone { position: absolute; left: -20000px; top: 0; width: 1400px; background: white; padding: 60px; direction: rtl; }
-        .pdf-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-        .pdf-table th, .pdf-table td { border: 1.5px solid #eee; padding: 15px; text-align: right; }
-        .pdf-cat { background: #eef6fc; font-weight: 900; color: var(--d); font-size: 18px; }
-        .pdf-img { max-width: 250px; margin: 10px; border-radius: 10px; }
+        input, select, textarea { font-family: inherit; }
+
+        /* PDF Render Zone - iOS Safe */
+        #pdf_zone { position: absolute; left: -10000px; top: 0; width: 800px; background: white; padding: 40px; direction: rtl; color: #000; font-family: Arial, sans-serif; }
+        .pdf-table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; }
+        .pdf-table th, .pdf-table td { border: 1px solid #000; padding: 10px; text-align: right; font-size: 13px; word-wrap: break-word; vertical-align: top; }
+        .pdf-table th { background: #f2f2f2; font-weight: bold; }
+        .pdf-cat { background: #d9e1f2; font-weight: bold; font-size: 15px; }
+        .pdf-img { width: 80px; height: 80px; object-fit: cover; margin: 2px; border: 1px solid #ccc; border-radius: 4px; }
     </style>
 </head>
 <body>
 
 <div id="login_page" class="page active-page">
     <div class="login-card">
-        <h1 style="color:var(--p); margin:0;">Intel Haifa QC</h1>
-        <p>מערכת איכות, בטיחות מזון ופגי תוקף - ניר עציון</p>
-        <div style="background:var(--l); padding:10px; border-radius:50px; font-size:12px; margin:20px 0; border:1px solid #d0e7ff; color:var(--p); font-weight:bold;">🔐 סביבת עבודה מאובטחת</div>
-        <input type="password" id="pass_input" style="width:100%; padding:20px; border-radius:15px; border:2px solid #ddd; text-align:center; font-size:22px; box-sizing:border-box;" placeholder="קוד גישה (2024)">
-        <button class="btn-main" style="margin-top:20px;" onclick="checkLogin()">כניסה למערכת</button>
+        <h1 style="color:var(--p); margin:0; font-size: 28px;">Intel QC</h1>
+        <p style="font-size: 14px; color: #666;">מערכת איכות ופגי תוקף</p>
+        
+        <input type="tel" id="pass_input" inputmode="numeric" pattern="[0-9]*" onkeyup="if(event.key === 'Enter' || event.keyCode === 13) checkLogin()" style="width:100%; padding:15px; border-radius:12px; border:2px solid #ddd; text-align:center; font-size:24px; font-weight:bold; letter-spacing:3px; margin-top: 20px;" placeholder="קוד גישה (2024)">
+        
+        <button class="btn-main" style="margin-top:20px;" onclick="checkLogin()">כניסה</button>
     </div>
 </div>
 
 <div id="menu_page" class="page">
-    <div class="container" style="text-align:center; padding-top:40px;">
-        <h2 style="font-size:38px; color:var(--p);">שלום שמעון,</h2>
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin:30px auto; max-width:600px;">
-            <div class="card" style="padding:15px;"><span id="st_count" style="font-size:26px; font-weight:900; color:var(--p);">0</span><br><small style="color:#888; font-weight:bold;">ביקורות</small></div>
-            <div class="card" style="padding:15px;"><span id="st_avg" style="font-size:26px; font-weight:900; color:var(--p);">0%</span><br><small style="color:#888; font-weight:bold;">ממוצע</small></div>
-            <div class="card" style="padding:15px;"><span id="st_last" style="font-size:26px; font-weight:900; color:var(--p);">--</span><br><small style="color:#888; font-weight:bold;">אחרונה</small></div>
+    <div class="container" style="text-align:center; padding-top:20px;">
+        <h2 style="font-size:32px; color:var(--p);">שלום,</h2>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:25px auto;">
+            <div class="card" style="padding:15px 5px;"><span id="st_count" style="font-size:24px; font-weight:900; color:var(--p);">0</span><br><small>ביקורות</small></div>
+            <div class="card" style="padding:15px 5px;"><span id="st_avg" style="font-size:24px; font-weight:900; color:var(--p);">0%</span><br><small>ממוצע</small></div>
+            <div class="card" style="padding:15px 5px;"><span id="st_last" style="font-size:22px; font-weight:900; color:var(--p);">--</span><br><small>אחרונה</small></div>
         </div>
-        <div style="display:grid; gap:20px; max-width:550px; margin:40px auto;">
-            <button class="btn-main" onclick="showPage('audit_page')">➕ ביקורת איכות חדשה</button>
-            <button class="btn-main" style="background:white; color:var(--p); border:3px solid var(--p);" onclick="openHistory()">📂 היסטוריית דוחות והשוואה</button>
-            <button class="btn-main" style="background:#edf2f7; color:#4a5568;" onclick="location.reload()">🔒 התנתקות</button>
+        <div style="display:grid; gap:15px; margin:30px auto;">
+            <button class="btn-main" onclick="showPage('audit_page')">➕ התחל ביקורת</button>
+            <button class="btn-main" style="background:white; color:var(--p); border:3px solid var(--p);" onclick="openHistory()">📂 היסטוריה</button>
         </div>
     </div>
 </div>
@@ -93,204 +103,115 @@
 <div id="audit_page" class="page">
     <div class="dashboard">
         <div style="text-align:center; flex:1;">
-            <div style="font-size:11px; font-weight:800; color:#7f8c8d; margin-bottom:5px;">ציון נוכחי</div>
+            <div style="font-size:11px; font-weight:800; color:#7f8c8d;">ציון נוכחי</div>
             <div id="g_live" class="gauge-circle" style="color:var(--p);">0%</div>
         </div>
         <div style="text-align:center; flex:1; position:relative;">
-            <div id="trend_icon" style="position:absolute; top:-5px; right:20%; font-size:24px;"></div>
-            <div style="font-size:11px; font-weight:800; color:#7f8c8d; margin-bottom:5px;">ביקורת קודמת</div>
-            <div id="g_prev" class="gauge-circle" style="font-size:16px; color:#bdc3c7; border-style:dashed;">--</div>
+            <div id="trend_icon" style="position:absolute; top:-5px; right:15%; font-size:20px;"></div>
+            <div style="font-size:11px; font-weight:800; color:#7f8c8d;">ביקורת קודמת</div>
+            <div id="g_prev" class="gauge-circle" style="font-size:14px; color:#bdc3c7; border-style:dashed;">--</div>
         </div>
-        <button onclick="showPage('menu_page')" style="background:none; border:none; font-size:36px; cursor:pointer; color:var(--p);">🏠</button>
+        <button onclick="showPage('menu_page')" style="background:none; border:none; font-size:28px; cursor:pointer; color:var(--p);">🏠</button>
     </div>
 
     <div class="container">
         <div class="card">
-            <label style="font-weight:800; color:var(--p); font-size:16px;">שם המבקר/ת:</label>
-            <input type="text" id="inspector_name" style="margin-top:10px; width:100%; padding:15px; border-radius:12px; border:2px solid #eee; font-size:16px; box-sizing:border-box;" placeholder="הכנס שם מלא">
+            <label style="font-weight:800; color:var(--p); font-size:15px;">שם המבקר:</label>
+            <input type="text" id="inspector_name" style="width:100%; margin-top:8px; padding:12px; border-radius:10px; border:2px solid #eee; font-size:16px;" placeholder="שם מלא">
             
-            <label style="font-weight:800; color:var(--p); display:block; margin-top:25px; font-size:16px;">בחר מתחם / טופס בדיקה:</label>
-            <select id="form_select" onchange="initForm()" style="margin-top:10px; width:100%; border:3px solid var(--p); font-weight:900; padding:15px; border-radius:12px; font-size:18px; box-sizing:border-box;">
+            <label style="font-weight:800; color:var(--p); display:block; margin-top:20px; font-size:15px;">בחר טופס:</label>
+            <select id="form_select" onchange="initForm()" style="width:100%; margin-top:8px; border:3px solid var(--p); font-weight:900; padding:12px; border-radius:10px; font-size:16px;">
                 <option value="">-- בחר טופס --</option>
-                <optgroup label="🍴 מסעדת Nine Dine">
-                    <option value="nd_expiry"> Nine Dine - ביקורת פגי תוקף</option>
-                    <option value="nd_clean"> Nine Dine - סיור ניקיון</option>
-                    <option value="nd_food"> Nine Dine - בטיחות מזון</option>
+                <optgroup label="Nona">
+                    <option value="nona_clean">סיור ניקיון - Nona</option>
+                    <option value="nona_food">בטיחות מזון - Nona</option>
+                    <option value="nona_expiry">פגי תוקף - Nona</option>
                 </optgroup>
-                <optgroup label="🍱 Bento">
-                    <option value="bento_expiry"> Bento - ביקורת פגי תוקף</option>
-                    <option value="bento_clean"> Bento - סיור ניקיון</option>
-                    <option value="bento_food"> Bento - בטיחות מזון</option>
+                <optgroup label="Bento">
+                    <option value="bento_clean">סיור ניקיון - Bento</option>
+                    <option value="bento_food">בטיחות מזון - Bento</option>
+                    <option value="bento_expiry">פגי תוקף - Bento</option>
                 </optgroup>
-                <optgroup label="🥗 Nona">
-                    <option value="nona_expiry"> Nona - ביקורת פגי תוקף</option>
-                    <option value="nona_clean"> Nona - סיור ניקיון</option>
-                    <option value="nona_food"> Nona - בטיחות מזון</option>
+                <optgroup label="Nine Dine">
+                    <option value="nd_clean">סיור ניקיון - Nine Dine</option>
+                    <option value="nd_food">בטיחות מזון - Nine Dine</option>
+                    <option value="nd_expiry">פגי תוקף - Nine Dine</option>
                 </optgroup>
-                <optgroup label="☕ בתי קפה (אילנ'ס)">
-                    <option value="cafe_food"> אילנ'ס - בטיחות ופגי תוקף</option>
-                    <option value="cafe_clean"> אילנ'ס - סיור ניקיון</option>
-                </optgroup>
-                <optgroup label="📦 לוגיסטיקה ומרלו&quot;ג">
-                    <option value="marlog_expiry"> מרלו"ג - פגי תוקף וניקיון</option>
+                <optgroup label="אחר">
+                    <option value="marlog_expiry">מרלו"ג - ניקיון ותוקף</option>
+                    <option value="cafe_clean">בתי קפה - ניקיון</option>
                 </optgroup>
             </select>
         </div>
 
         <div id="questions_mount"></div>
 
-        <div id="audit_footer" class="card" style="display:none; margin-top:40px;">
-            <label style="font-weight:800; color:var(--p); font-size:16px;">סיכום מנהלים כללי:</label>
-            <textarea id="audit_summary" rows="6" style="margin-top:10px; width:100%; border:2px solid #eee; border-radius:12px; padding:15px; box-sizing:border-box; font-size:16px;" placeholder="תאר כאן ממצאים ודגשים לשיפור..."></textarea>
-            <button class="btn-main" style="margin-top:30px;" onclick="saveAudit()">💾 סיים ושמור דוח PDF</button>
+        <div id="audit_footer" class="card" style="display:none; margin-top:30px;">
+            <label style="font-weight:800; color:var(--p);">הערות לסיכום דוח:</label>
+            <textarea id="audit_summary" rows="4" style="width:100%; margin-top:10px; border:2px solid #eee; border-radius:10px; padding:12px;" placeholder="סיכום כללי..."></textarea>
+            <button class="btn-main" style="margin-top:20px;" onclick="saveAudit()">💾 סיים ושמור PDF</button>
         </div>
     </div>
 </div>
 
 <div id="history_page" class="page">
     <div class="container">
-        <button class="btn-main" style="width:auto; padding:12px 25px; margin-bottom:20px; background:var(--d);" onclick="showPage('menu_page')">חזור לתפריט 🔙</button>
-        <h2 style="color:var(--p); font-size:32px;">היסטוריית דוחות</h2>
+        <button class="btn-main" style="width:auto; padding:10px 20px; margin-bottom:20px; background:var(--d); font-size:15px;" onclick="showPage('menu_page')">חזור</button>
+        <h2 style="color:var(--p); font-size:26px; margin-top:0;">היסטוריית דוחות</h2>
         <div id="history_list"></div>
     </div>
 </div>
 
-<div id="modal_pdf" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:5000; padding:20px; backdrop-filter:blur(10px);">
-    <div style="background:white; padding:50px; border-radius:35px; max-width:550px; margin:50px auto; text-align:center;">
-        <div style="font-size:70px; margin-bottom:15px;">📑</div>
-        <h2 style="color:var(--p); font-size:28px;">הדוח נשמר במערכת!</h2>
-        <p style="color:#666; font-size:16px; margin-bottom:30px;">הנתונים הוזנו בבטחה. כעת ניתן להפיק את קובץ ה-PDF הרשמי ולשתף אותו.</p>
-        <button class="btn-main" onclick="exportPDF()">📤 שלח PDF עכשיו (WhatsApp)</button>
-        <button class="btn-main" style="background:#f1f3f5; color:#444; margin-top:15px; border:2px solid #ddd;" onclick="document.getElementById('modal_pdf').style.display='none'">חזור למסך</button>
+<div id="modal_pdf" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:5000; padding:20px; backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center;">
+    <div style="background:white; padding:40px 25px; border-radius:25px; width:100%; max-width:400px; text-align:center;">
+        <h2 style="color:var(--p); margin-top:0;">הדוח מוכן וכולל את כל התמונות וההערות!</h2>
+        <button class="btn-main" onclick="exportPDF()">📤 שלח PDF עכשיו</button>
+        <button class="btn-main" style="background:#f1f3f5; color:#444; margin-top:12px; border:2px solid #ddd;" onclick="document.getElementById('modal_pdf').style.display='none'">חזור</button>
     </div>
 </div>
 
 <div id="pdf_zone"></div>
 
 <script>
-    // --- DATABASE האמיתי מהאקסלים שהועלו ---
     const DB = {
-        /* ----- NINE DINE ----- */
-        "nd_expiry": {
-            name: "ביקורת פגי תוקף - Nine Dine",
+        "nona_clean": {
+            name: "סיור ניקיון - Nona",
             sections: [
-                { t: "מקרר 4 - מטבח חם מוגמר, קומה 0", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר 3 - קצבייה בע\"ד בתהליך, קומה 0", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר 8 - הפשרת בעלי כנף, קומה 0", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר 5 - הפשרת בקר, קומה 0", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר 2 - הפשרת דגים, קומה 0", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר 7 - חלבי מוגמר, קומה 0", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] }
-            ]
-        },
-        "nd_clean": {
-            name: "סיור ניקיון - Nine Dine",
-            sections: [
-                { t: "רחבת כניסה", qs: ["האם אזור הקופות נקי?", "האם עמדת הצטיידות (סכום ומגשים) נקיה ומסודרת?", "האם עמדת שטיפת ידיים נקייה (סבון ונייר)?", "האם אזור כניסה לחדר אוכל נקי?"] },
-                { t: "עמדות הגשה", qs: ["האם פלנצ'ות נקיות ומוכנות לעבודה?", "האם המנדפים נקיים?", "האם דלפקי הגשה ומשטחי עבודה נקיים?", "האם פסים קרים וחמים נקיים?", "האם הריצפה והתעלות ריקות משאריות מזון?", "האם מקררים בדלפקי הגשה ריקים ונקיים?"] },
-                { t: "חדר שטיפה ומדיחים", qs: ["האם המסוע החיצוני נקי?", "האם בוצע פירוק דיזות ורשתות?", "האם קירות פנים מדיח נקי?", "האם מדיח גסטרונום נקי?", "האם עגלות איחסון צלחות נקיות?"] },
-                { t: "קצבייה וקונדיטוריה", qs: ["האם כיורים ומשטחי עבודה נקיים (קצבייה)?", "האם מטחנת בשר נקייה?", "האם מדפים ורצפה נקיים (קונדיטוריה)?", "האם מיקסרים נקיים משאריות בצק?"] }
-            ]
-        },
-        "nd_food": {
-            name: "בטיחות מזון - Nine Dine",
-            sections: [
-                { t: "עמדות הגשה", qs: ["האם מתקיימת עבודה ע\"פ קוד צבעים?", "האם הטמפ' של המזון בהגשה תקינה?", "האם נשמרות דוגמאות מזון? (72 שעות)", "קיימת סכנה לזיהום צולב?", "האם נצפו מזון ללא מדבקת תאריך פתיחה?", "לבוש עובדים (כפפות, כיסוי ראש, סינר)?", "האם נצפו עובדים שמשתמשים בטלפון?"] },
-                { t: "מטבח חם", qs: ["האם מתבצע מעקב טמפ' של המזון?", "האם נמצא מזון שיש לזרוק?", "האם מתבצע תיעוד של בישול תרמי?", "האם קיים סדר המזון על עגלות (עם מדבקה)?", "שמן הטיגון בצ'יפסר נקי ותועד?"] },
-                { t: "עיבוד בשר (קצבייה)", qs: ["האם קיימת שמירה על הפרדה בין המדורים?", "האם הבע\"ד מסודר על גסטרונומים מחוררים ותועד?"] }
-            ]
-        },
-        
-        /* ----- BENTO ----- */
-        "bento_expiry": {
-            name: "ביקורת פגי תוקף - Bento",
-            sections: [
-                { t: "מקרר 9 - ירקות גולמי", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר 5 - מוגמר מטבח חם", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר 2 - בע\"ד בתהליך", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר 1 - סלטייה מוגמר", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר 6 - הפשרות בעלי כנף", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר 7 - הפשרות בקר", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] }
+                { t: "רחבת כניסה חדר אוכל", qs: ["האם איזור הקופות נקי", "האם עמדת הצטיידות (סכום ומגשים) נקיה ומסודרת", "האם איזור כניסה לחדר אוכל נקי"] },
+                { t: "עמדות הגשה", qs: ["האם פלנצ'ות נקיות ומוכנות לעבודה", "האם המנדפים נקיים", "האם דלפקי הגשה ומשטחי עבודה נקיים", "האם הריצפה והתעלות ריקות משאריות מזון"] }
             ]
         },
         "bento_clean": {
             name: "סיור ניקיון - Bento",
             sections: [
-                { t: "רחבת כניסה", qs: ["האם אזור הקופות נקי?", "האם עמדת הצטיידות (סכום ומגשים) נקיה?"] },
-                { t: "עמדות הגשה", qs: ["האם פלנצ'ות נקיות ומוכנות?", "האם הצ'יפסרים מכוסים ומכובים?", "האם מקררים בדלפקי הגשה ריקים ונקיים?"] },
-                { t: "חדר שטיפה", qs: ["האם המסוע החיצוני נקי?", "האם בוצע פירוק דיזות ורשתות?", "האם קרשי העבודה נקיים ולא בלויים?"] }
+                { t: "רחבת כניסה", qs: ["האם איזור הקופות נקי", "האם עמדת הצטיידות (סכום ומגשים) נקיה ומסודרת"] },
+                { t: "עמדות הגשה", qs: ["האם פלנצ'ות נקיות ומוכנות לעבודה", "האם מקררים בדלפקי הגשה ריקים ונקיים"] }
             ]
         },
-        "bento_food": {
-            name: "בטיחות מזון - Bento",
+        "nd_clean": {
+            name: "סיור ניקיון - Nine Dine",
             sections: [
-                { t: "עמדות הגשה", qs: ["עבודה ע\"פ קוד צבעים הנהוג בניר עציון?", "טמפ' מזון בהגשה תקינה?", "נשמרות דוגמאות מזון (72 שעות)?", "סכנה לזיהום צולב?"] },
-                { t: "עיבוד ירקות והכנת סלטים", qs: ["ברז וכיור + אמצעי היגיינה תקינים ומלאים?", "ירקות מחוטאים בקירור עם תאריך?", "תיעוד צינון בטופס 'קירור מהיר'?"] }
+                { t: "רחבת כניסה", qs: ["האם איזור הקופות נקי", "האם עמדת הצטיידות נקיה ומסודרת", "האם עמדת שטיפת ידיים נקייה"] },
+                { t: "עמדות הגשה", qs: ["האם פלנצ'ות נקיות ומוכנות לעבודה", "האם המנדפים נקיים", "האם פסים קרים וחמים נקיים"] }
             ]
         },
-
-        /* ----- NONA ----- */
-        "nona_expiry": {
-            name: "ביקורת פגי תוקף - Nona",
-            sections: [
-                { t: "מקרר 1 - ירקות גולמי", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר מוגמר 3", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר מוגמר 4", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר 5 - בע\"ד בתהליך", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר מוגמר 6 - מעדנים", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר מוגמר 7 - חלבי", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר מוגמר 8 - ד\"מ", qs: ["מילוי טפסי בקרת טמפ' 2 פעמים ביום?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] }
-            ]
-        },
-        "nona_clean": {
-            name: "סיור ניקיון - Nona",
-            sections: [
-                { t: "רחבת כניסה וחדר אוכל", qs: ["האם אזור הקופות נקי?", "האם עמדת הצטיידות (סכום ומגשים) נקיה ומסודרת?", "האם שולחנות וכסאות נקיים?"] },
-                { t: "עמדות הגשה", qs: ["האם דלפקי הגשה ומשטחי עבודה נקיים?", "האם פסים קרים/חמים נקיים?", "האם רצפה ותעלות נקיות משאריות?"] }
-            ]
-        },
-        "nona_food": {
-            name: "בטיחות מזון - Nona",
-            sections: [
-                { t: "מערכות קירור", qs: ["שימוש במקררים לפי הייעוד?", "הפרדה בין גולמי למוכן?", "האם כל המזון מכוסה/עטוף?", "האם נצפו מזון ללא מדבקת תאריך פתיחה?"] },
-                { t: "מטבח חם", qs: ["עבודה ע\"פ קוד צבעים?", "מתבצע מעקב טמפ' לאורך התהליך?", "תיעוד של בישול תרמי?"] }
-            ]
-        },
-
-        /* ----- CAFE ----- */
-        "cafe_food": {
-            name: "בטיחות מזון ופגי תוקף - אילנ'ס",
-            sections: [
-                { t: "מחסן ואזורי אחסון", qs: ["האם נצפו מוצרים פגי תוקף?", "האם כל המזון מצופה/עטוף?", "מזון קנוי מסומן עם תאריך תוקף?", "אחסון בהגבהה והפרדה ממוצרי אריזה?"] },
-                { t: "אזור הגשה", qs: ["האם המוצרים המוגמרים שבמקרר בתוקף? (פיצה/קיש/קפה)", "מדבקה ייעודית למוצרים שיצאו מהקפאה?", "המוצרים המוגשים מהמטבח עם תאריך ייצור?"] },
-                { t: "עובדים", qs: ["העובדים לובשים בגדי עבודה נקיים? נעלי עבודה?", "לעובדים יש כובע?", "האם נצפו עובדים ללא כפפות?"] }
-            ]
-        },
-        "cafe_clean": {
-            name: "סיור ניקיון - בתי קפה",
-            sections: [
-                { t: "רחבת כניסה לבית הקפה", qs: ["האם אזור כניסה נקי?", "עמדת T.A (סוכר, כפיות, חבקים מלאה ונקיה)", "פחי אשפה מרוקנים ונקיים?"] },
-                { t: "עמדת הגשה", qs: ["האם עמדת עבודה והקופה נקיות?", "האם תנורי חימום / טוסטר נקיים?", "מכונת האייס והתפוזים נקיות ומלאות?", "כדי החלב נקיים?", "מכונת הקפה נקיה?"] }
-            ]
-        },
-
-        /* ----- MARLOG ----- */
-        "marlog_expiry": {
-            name: "ביקורת פגי תוקף וניקיון - מרלו\"ג",
-            sections: [
-                { t: "מקרר 15 - ירקות לאחר חיטוי", qs: ["מילוי טפסי בקרת טמפ' פעמיים ביום?", "האם המקרר נקי?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקרר 16 - ירקות גולמי", qs: ["מילוי טפסי בקרת טמפ' פעמיים ביום?", "האם המקרר נקי?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מקפיא 11 - בעלי כנף", qs: ["מילוי טפסי בקרת טמפ' פעמיים ביום?", "האם המקפיא נקי?", "האם נמצאו פגי תוקף?!", "האם נמצא מוצר עם תוקף קצר?"] },
-                { t: "מחסן יבש / קונדיטוריה / בתי קפה", qs: ["האם המחסנים מסודרים ונקיים?", "אחסון מתבצע בהגבהה והפרדה?", "בדיקת פגי תוקף - עבודה לפי FIFO?", "נצפו מוצרים באריזה פגומה/פתוחה?"] }
-            ]
-        }
+        "nona_food": { name: "בטיחות מזון - Nona", sections: [ { t: "מערכות קירור", qs: ["שימוש במקררים לפי הייעוד שלו ?", "האם כל המזון מכוסה / עטוף?", "האם נצפו מזון ללא מדבקת תאריך פתיחה?"] } ] },
+        "bento_food": { name: "בטיחות מזון - Bento", sections: [ { t: "עמדות הגשה", qs: ["האם מתקיימת עבודה עפ קוד צבעים?", "האם הטמפ' של המזון בהגשה תקינה?", "האם נשמרות דוגמאות מזון?"] } ] },
+        "nd_food": { name: "בטיחות מזון - Nine Dine", sections: [ { t: "עמדות הגשה", qs: ["האם מתקיימת עבודה עפ קוד צבעים?", "האם הטמפ' של המזון בהגשה תקינה?"] } ] },
+        "nona_expiry": { name: "פגי תוקף - Nona", sections: [ { t: "מקררים", qs: ["האם נמצאו פגי תוקף ?", "האם נמצא מוצר עם תוקף קצר?"] } ] },
+        "bento_expiry": { name: "פגי תוקף - Bento", sections: [ { t: "מקררים", qs: ["האם נמצאו פגי תוקף ?", "האם נמצא מוצר עם תוקף קצר?"] } ] },
+        "nd_expiry": { name: "פגי תוקף - Nine Dine", sections: [ { t: "מקררים", qs: ["האם נמצאו פגי תוקף ?", "האם נמצא מוצר עם תוקף קצר?"] } ] },
+        "marlog_expiry": { name: "פגי תוקף וניקיון מרלוג", sections: [ { t: "מקרר 15", qs: ["האם המקרר נקי?", "האם נמצאו פגי תוקף ?"] } ] },
+        "cafe_clean": { name: "סיור ניקיון בתי קפה", sections: [ { t: "עמדת הגשה", qs: ["האם עמדת ההגשה נקייה", "האם הקופה נקייה ונעולה"] } ] }
     };
 
-    let session = { scores: {}, notes: {}, photos: {}, type: "", inspector: "", score: 0, date: null, prevScore: null };
+    let session = { scores: {}, notes: {}, photos: {}, type: "", inspector: "", score: 0, date: null, prevScore: null, avgScore: null };
 
-    /* --- פעולות וניהול מערכת --- */
+    // התיקון לכניסה: שימוש ב-Trim ומקלדת טלפון
     function checkLogin() {
-        if(document.getElementById('pass_input').value === "2024") showPage('menu_page');
-        else alert("קוד גישה שגוי!");
+        const pass = document.getElementById('pass_input').value.trim();
+        if(pass === "2024") showPage('menu_page');
+        else alert("קוד שגוי, אנא נסה שוב");
     }
 
     function showPage(id) {
@@ -308,37 +229,48 @@
         const config = DB[type];
         session = { scores: {}, notes: {}, photos: {}, type: type, inspector: "", score: 0, date: Date.now() };
         
-        const history = JSON.parse(localStorage.getItem('qc_intel_ultimate_final') || '[]');
-        const last = history.find(h => h.type === type);
+        const history = JSON.parse(localStorage.getItem('qc_intel_final_v5') || '[]');
+        const typeHistory = history.filter(h => h.type === type);
+        
+        if(typeHistory.length > 0) { 
+            session.prevScore = typeHistory[0].score;
+            session.avgScore = Math.round(typeHistory.reduce((a,b)=>a+b.score, 0) / typeHistory.length);
+        } else { 
+            session.prevScore = null; 
+            session.avgScore = null;
+        }
+        
         const prevG = document.getElementById('g_prev');
         const trend = document.getElementById('trend_icon');
-        
-        if(last) { prevG.innerText = last.score + "%"; session.prevScore = last.score; }
-        else { prevG.innerText = "--"; session.prevScore = null; }
+        prevG.innerText = session.prevScore !== null ? session.prevScore + "%" : "--";
         trend.innerHTML = "";
 
-        let html = "";
+        let html = `<div class="form-main-title">${config.name}</div>`;
+        
         config.sections.forEach((sec, sIdx) => {
-            html += `<div class="cat-header"><span>${sec.t}</span><span>📋</span></div>`;
+            html += `<div class="cat-header"><span>${sec.t}</span></div>`;
             
-            html += `
-            <div class="photo-btn" onclick="document.getElementById('cam_${sIdx}').click()">
-                📸 הוסף תיעוד מצולם (תמונות מהשטח) לפרק זה
-                <input type="file" id="cam_${sIdx}" accept="image/*" capture="environment" multiple style="display:none" onchange="handlePhotos(${sIdx}, this)">
-            </div>
-            <div id="prev_${sIdx}" class="photo-preview"></div>`;
-
             sec.qs.forEach((q, qIdx) => {
                 const qId = `q_${sIdx}_${qIdx}`;
                 html += `
                 <div class="audit-item" id="row_${qId}">
-                    <div style="font-size:18px; font-weight:700; margin-bottom:15px; color:#2c3e50;">${q}</div>
+                    <div style="font-size:16px; font-weight:700; margin-bottom:10px;">${q}</div>
+                    
                     <div class="score-group">
-                        <button class="btn-score btn-pass" onclick="setScore('${qId}', 1, this)">תקין</button>
-                        <button class="btn-score btn-fail" onclick="setScore('${qId}', 0, this)">ליקוי</button>
-                        <button class="btn-score btn-na" onclick="setScore('${qId}', -1, this)">N/A</button>
+                        <button class="btn-score btn-100" onclick="setScore('${qId}', 100, this)">תקין</button>
+                        <button class="btn-score btn-50" onclick="setScore('${qId}', 50, this)">חלקי</button>
+                        <button class="btn-score btn-0" onclick="setScore('${qId}', 0, this)">לא תקין</button>
+                        <button class="btn-score btn-na" onclick="setScore('${qId}', -1, this)">ל"ר</button>
                     </div>
-                    <textarea class="note-area" id="note_${qId}" oninput="session.notes['${qId}']=this.value" placeholder="הוסף הערות וממצאים לתיקון..."></textarea>
+                    
+                    <textarea class="note-area" id="note_${qId}" oninput="session.notes['${qId}']=this.value" placeholder="הוסף הערה לשאלה זו..."></textarea>
+                    
+                    <div class="photo-btn" onclick="document.getElementById('cam_${qId}').click()">
+                        📸 צרף תמונה לשאלה זו
+                        <input type="file" id="cam_${qId}" accept="image/*" multiple style="display:none" onchange="handleQPhotos('${qId}', this)">
+                    </div>
+                    <div id="prev_${qId}" class="photo-preview"></div>
+
                 </div>`;
             });
         });
@@ -348,10 +280,10 @@
         updateUI();
     }
 
-    function handlePhotos(sIdx, input) {
+    function handleQPhotos(qId, input) {
         const files = input.files;
-        if(!session.photos[sIdx]) session.photos[sIdx] = [];
-        const prev = document.getElementById(`prev_${sIdx}`);
+        if(!session.photos[qId]) session.photos[qId] = [];
+        const prev = document.getElementById(`prev_${qId}`);
         
         Array.from(files).forEach(file => {
             const reader = new FileReader();
@@ -359,7 +291,7 @@
                 const img = document.createElement('img');
                 img.src = e.target.result;
                 prev.appendChild(img);
-                session.photos[sIdx].push(e.target.result);
+                session.photos[qId].push(e.target.result);
             };
             reader.readAsDataURL(file);
         });
@@ -369,19 +301,20 @@
         session.scores[id] = val;
         btn.parentElement.querySelectorAll('.btn-score').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById(`row_${id}`).classList.add('active');
-        
-        const noteArea = document.getElementById(`note_${id}`);
-        noteArea.style.display = (val === 0) ? "block" : "none"; 
-        
         updateUI();
     }
 
     function updateUI() {
         let sum = 0, count = 0;
-        for(let k in session.scores) { if(session.scores[k] !== -1) { sum += session.scores[k]; count++; } }
-        const score = count > 0 ? Math.round((sum / count) * 100) : 0;
+        for(let k in session.scores) { 
+            if(session.scores[k] !== -1) { 
+                sum += session.scores[k]; 
+                count++; 
+            } 
+        }
+        const score = count > 0 ? Math.round(sum / count) : 0;
         session.score = score;
+        
         const g = document.getElementById('g_live');
         const trend = document.getElementById('trend_icon');
         g.innerText = score + "%";
@@ -398,7 +331,7 @@
     }
 
     function refreshStats() {
-        const history = JSON.parse(localStorage.getItem('qc_intel_ultimate_final') || '[]');
+        const history = JSON.parse(localStorage.getItem('qc_intel_final_v5') || '[]');
         document.getElementById('st_count').innerText = history.length;
         if(history.length > 0) {
             const avg = Math.round(history.reduce((a,b) => a + b.score, 0) / history.length);
@@ -408,14 +341,14 @@
     }
 
     function openHistory() {
-        const history = JSON.parse(localStorage.getItem('qc_intel_ultimate_final') || '[]');
+        const history = JSON.parse(localStorage.getItem('qc_intel_final_v5') || '[]');
         const list = document.getElementById('history_list');
-        if(history.length === 0) list.innerHTML = "<div class='card'><p style='text-align:center;'>אין דוחות שמורים במערכת.</p></div>";
+        if(history.length === 0) list.innerHTML = "<p>אין דוחות שמורים.</p>";
         else {
             list.innerHTML = history.map(h => `
-                <div class="card" style="display:flex; justify-content:space-between; align-items:center; border-right:8px solid var(--p); padding:20px;">
-                    <div><h4 style="margin:0; font-size:18px;">${DB[h.type].name}</h4><p style="margin:5px 0 0; color:#666; font-size:14px;">${new Date(h.date).toLocaleDateString('he-IL')} | מבקר/ת: ${h.inspector}</p></div>
-                    <div style="font-size:26px; font-weight:900; color:${h.score >= 85 ? 'var(--g)' : (h.score >= 70 ? 'var(--y)' : 'var(--r)')};">${h.score}%</div>
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center; border-right:4px solid var(--p); padding:15px;">
+                    <div><h4 style="margin:0 0 5px 0; font-size:16px;">${DB[h.type].name}</h4><p style="margin:0; font-size:12px; color:#666;">${new Date(h.date).toLocaleDateString('he-IL')} | ${h.inspector}</p></div>
+                    <div style="font-size:22px; font-weight:bold; color:var(--p);">${h.score}%</div>
                 </div>
             `).join('');
         }
@@ -424,78 +357,104 @@
 
     function saveAudit() {
         session.inspector = document.getElementById('inspector_name').value || "לא צוין";
-        if(session.inspector === "לא צוין") { alert("אנא הכנס את שם המבקר לפני השמירה."); return; }
+        if(session.inspector === "לא צוין") { alert("הכנס שם מבקר"); return; }
         
-        let history = JSON.parse(localStorage.getItem('qc_intel_ultimate_final') || '[]');
+        let history = JSON.parse(localStorage.getItem('qc_intel_final_v5') || '[]');
         history.unshift(session);
-        localStorage.setItem('qc_intel_ultimate_final', JSON.stringify(history));
+        localStorage.setItem('qc_intel_final_v5', JSON.stringify(history));
         
-        document.getElementById('modal_pdf').style.display = 'block';
+        document.getElementById('modal_pdf').style.display = 'flex';
     }
 
     function exportPDF() {
         const config = DB[session.type];
         const zone = document.getElementById('pdf_zone');
+        
+        const now = new Date(session.date);
+        const dateStr = now.toLocaleDateString('he-IL');
+        const timeStr = now.toTimeString().substring(0, 5);
+        const passFailStr = session.score >= 85 ? "(עובר)" : "(נכשל)";
+        
+        const prevScoreStr = session.prevScore !== null ? `${session.prevScore}%` : "אין נתונים";
+        const avgScoreStr = session.avgScore !== null ? `${session.avgScore}%` : "אין נתונים";
+
         let html = `
-            <div style="text-align:center; border-bottom:10px solid var(--p); padding-bottom:40px; margin-bottom:50px;">
-                <h1 style="color:var(--p); font-size:48px; margin:0;">דוח בקרת איכות ובטיחות מזון - אינטל חיפה</h1>
-                <h2 style="font-size:32px; color:#333; margin-top:20px;">טופס: ${config.name}</h2>
-                <div style="font-size:22px; margin-top:35px; background:#f8f9fa; padding:30px; border:2px solid #eee; border-radius:15px; display:inline-block; min-width:700px;">
-                    <strong>מבקר/ת:</strong> ${session.inspector} | <strong>תאריך:</strong> ${new Date(session.date).toLocaleDateString('he-IL')} | <strong>ציון סופי:</strong> <span style="color:var(--p); font-size:30px; font-weight:900;">${session.score}%</span>
+            <div style="text-align: right; margin-bottom: 25px;">
+                <h1 style="margin:0; font-size:28px; color: #003c71;">סיכום ביקורת איכות - אינטל חיפה</h1>
+                <h2 style="margin:8px 0 15px 0; font-size:20px; color: #0071c5;">${config.name}</h2>
+                <div style="font-size:16px; line-height:1.5; background: #f8f9fa; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                    <strong>תאריך:</strong> ${dateStr} | <strong>שעות:</strong> ${timeStr}<br>
+                    <strong>מבקר:</strong> ${session.inspector}<br>
+                    <strong>ציון נוכחי:</strong> <span style="font-size:18px; font-weight:bold; color: #000;">${session.score}% ${passFailStr}</span><br>
+                    <strong>ציון ביקורת קודמת במתחם:</strong> ${prevScoreStr}<br>
+                    <strong>ציון ממוצע מצטבר במתחם:</strong> ${avgScoreStr}
                 </div>
             </div>
+            
             <table class="pdf-table">
-                <thead><tr><th style="width:40%;">הסעיף הנבדק</th><th style="width:15%; text-align:center;">סטטוס</th><th style="width:45%;">הערות וממצאים</th></tr></thead>
+                <thead>
+                    <tr>
+                        <th style="width: 35%;">הסעיף הנבדק</th>
+                        <th style="width: 15%; text-align: center;">סטטוס</th>
+                        <th style="width: 25%;">הערת מבקר</th>
+                        <th style="width: 25%; text-align: center;">תמונות</th>
+                    </tr>
+                </thead>
                 <tbody>`;
         
         config.sections.forEach((sec, sIdx) => {
-            html += `<tr class="pdf-cat"><td colspan="3">${sec.t}</td></tr>`;
+            html += `<tr class="pdf-cat"><td colspan="4">${sec.t}</td></tr>`;
+            
             sec.qs.forEach((q, qIdx) => {
                 const id = `q_${sIdx}_${qIdx}`;
                 const val = session.scores[id];
-                const note = session.notes[id] || "-";
+                const note = session.notes[id] || "";
                 
-                let stTxt = "לא נבדק", stCol = "#999";
-                if(val === 1) { stTxt = "תקין"; stCol = "#27ae60"; }
-                else if(val === 0) { stTxt = "ליקוי"; stCol = "#e74c3c"; }
-                else if(val === -1) { stTxt = "N/A"; stCol = "#7f8c8d"; }
+                let stTxt = "לא נבדק";
+                if(val === 100) stTxt = "100% (תקין)";
+                else if(val === 50) stTxt = "50% (חלקי)";
+                else if(val === 0) stTxt = "0% (לא תקין)";
+                else if(val === -1) stTxt = "N/A";
 
-                html += `<tr><td style="font-weight:700;">${q}</td><td style="text-align:center; font-weight:900; color:${stCol}">${stTxt}</td><td style="line-height:1.5;">${note}</td></tr>`;
+                let imgCell = "";
+                if(session.photos[id] && session.photos[id].length > 0) {
+                    imgCell = session.photos[id].map(src => `<img src="${src}" class="pdf-img">`).join(' ');
+                }
+
+                html += `
+                    <tr>
+                        <td style="font-weight:bold;">${q}</td>
+                        <td style="text-align:center;">${stTxt}</td>
+                        <td style="white-space:pre-wrap;">${note}</td>
+                        <td style="text-align:center;">${imgCell}</td>
+                    </tr>`;
             });
-            
-            if(session.photos[sIdx] && session.photos[sIdx].length > 0) {
-                html += `<tr><td colspan="3" style="background:#fff; padding:20px;"><strong>תיעוד מצולם לפרק זה:</strong><br><div style="margin-top:10px;">`;
-                session.photos[sIdx].forEach(src => { html += `<img src="${src}" class="pdf-img">`; });
-                html += `</div></td></tr>`;
-            }
         });
 
         html += `</tbody></table>`;
+        
         const sumText = document.getElementById('audit_summary').value;
         if(sumText) {
-            html += `<div style="margin-top:50px; padding:35px; border:4px solid var(--p); border-radius:15px; background:#fcfcfc;">
-                <h3 style="margin-top:0; color:var(--p); font-size:26px;">סיכום מנהלים והמלצות להמשך טיפול:</h3>
-                <p style="font-size:20px; line-height:1.8; color:#333; white-space:pre-wrap;">${sumText}</p>
+            html += `<div style="margin-top:30px; border: 2px solid #0071c5; padding: 15px; border-radius: 8px;">
+                <h3 style="margin: 0 0 10px 0; color: #0071c5;">הערות לסיכום מנהלים:</h3>
+                <p style="white-space:pre-wrap; font-size:15px; margin: 0;">${sumText}</p>
             </div>`;
         }
         
-        html += `<div style="margin-top:80px; text-align:center; font-size:14px; color:#aaa; border-top:2px solid #eee; padding-top:30px;">הופק על ידי מערכת בקרת האיכות - ניר עציון (v24.0)</div>`;
-        
         zone.innerHTML = html;
 
-        // הגדרת רוחב 1400 שמונע את החיתוך באייפון!
         const opt = {
-            margin: 12,
-            filename: `Intel_QC_Report_${session.inspector}.pdf`,
+            margin: 10,
+            filename: `Audit_${session.inspector}_${dateStr.replace(/\//g,'-')}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, width: 1400, windowWidth: 1400, x: 0, y: 0 },
+            html2canvas: { scale: 1.5, useCORS: true, width: 800, windowWidth: 800, scrollX: 0, scrollY: 0 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
         html2pdf().set(opt).from(zone).output('blob').then(blob => {
-            const file = new File([blob], `Audit_${session.inspector}.pdf`, { type: 'application/pdf' });
+            const file = new File([blob], `Audit.pdf`, { type: 'application/pdf' });
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                navigator.share({ files: [file], title: 'דוח ביקורת - אינטל' });
+                navigator.share({ files: [file], title: 'דוח ביקורת מלא' });
             } else {
                 window.open(URL.createObjectURL(blob));
             }
